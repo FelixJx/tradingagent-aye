@@ -1,15 +1,21 @@
 services:
   - type: web
-    name: tradingagent
+    name: tradingagent-zh
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn web_app:app
     envVars:
       - key: TUSHARE_TOKEN
         value: b34d8920b99b43d48df7e792a4708a29f868feeee30d9c84b54bf065
-      - key: DASHSCOPE_API_KEY  
+      - key: DEEPSEEK_API_KEY
+        value: sk-831cb74319af43ebbfd7ad5e13fd4dfd
+      - key: DASHSCOPE_API_KEY
         value: sk-e050041b41674ed7b87644895ebae718
-      - key: LOG_LEVEL
-        value: INFO
+      - key: TAVILY_API_KEY
+        value: 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
+      - key: FLASK_ENV
+        value: production
       - key: PYTHONPATH
         value: /opt/render/project/src
+      - key: TZ
+        value: Asia/Shanghai

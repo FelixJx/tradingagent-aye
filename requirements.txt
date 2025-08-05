@@ -1,3 +1,9 @@
 flask==2.3.3
 gunicorn==21.2.0
 requests==2.31.0
+numpy==1.24.3
+pandas==2.0.3
+tushare==1.2.89
+httpx==0.25.0
+python-dateutil==2.8.2
+ujson==5.8.0

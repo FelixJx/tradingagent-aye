@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <title>TradingAgent API Dashboard</title>
+    <title>交易智能体 - 股票分析系统</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            max-width: 1000px; 
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; 
+            max-width: 1200px; 
             margin: 0 auto; 
             padding: 20px; 
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -18,6 +18,10 @@
             color: white;
             margin-bottom: 30px;
         }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
         .container { 
             background: white; 
             padding: 25px; 
@@ -25,12 +29,57 @@
             margin: 20px 0; 
             box-shadow: 0 8px 32px rgba(0,0,0,0.1);
         }
+        .analysis-container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            min-height: 400px;
+        }
+        .thinking-process {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #28a745;
+        }
+        .agent-section {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid #ffeaa7;
+        }
+        .news-section {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid #b3d8ff;
+        }
+        .technical-section {
+            background: #f0fff4;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid #90ee90;
+        }
         .api-test { 
             background: #f8f9fa; 
             padding: 20px; 
             border-radius: 10px; 
             margin: 15px 0; 
             border-left: 4px solid #007cba;
+        }
+        .input-group {
+            margin: 15px 0;
+        }
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #2d3748;
         }
         button { 
             background: linear-gradient(45deg, #007cba, #0056b3); 
@@ -41,10 +90,30 @@
             cursor: pointer; 
             font-size: 14px;
             transition: all 0.3s ease;
+            margin: 5px;
         }
         button:hover { 
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,124,186,0.3);
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007cba;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         pre { 
             background: #2d3748; 
@@ -54,16 +123,20 @@
             overflow-x: auto; 
             font-size: 13px;
             border: 1px solid #4a5568;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
-        input { 
+        input, select { 
             padding: 10px; 
-            margin: 8px; 
+            margin: 8px 0; 
             border: 2px solid #e2e8f0; 
             border-radius: 6px; 
             font-size: 14px;
             transition: border-color 0.3s ease;
+            width: 100%;
+            max-width: 300px;
         }
-        input:focus {
+        input:focus, select:focus {
             outline: none;
             border-color: #007cba;
         }
@@ -76,139 +149,309 @@
             font-size: 12px;
             font-weight: bold;
         }
-        .endpoint-title {
-            color: #2d3748;
-            font-weight: 600;
+        .recommendation {
+            font-size: 1.2em;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 15px 0;
+        }
+        .buy { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .sell { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .hold { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #007cba, #0056b3);
+            transition: width 0.3s ease;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>🚀 TradingAgent API Dashboard</h1>
-        <p>Real-time Stock Analysis API</p>
+        <h1>🤖 智能交易助手</h1>
+        <p>基于多维度分析的专业股票投资建议系统</p>
     </div>
     
     <div class="container">
-        <h2>📊 API Status</h2>
-        <p><strong>Status:</strong> <span class="status-badge" id="status">Loading...</span></p>
-        <p><strong>Version:</strong> <span id="version">Loading...</span></p>
-        <p><strong>Last Updated:</strong> <span id="timestamp">Loading...</span></p>
-        <button onclick="testBasicAPI()">🔄 Refresh Status</button>
+        <h2>📊 系统状态</h2>
+        <p><strong>服务状态:</strong> <span class="status-badge" id="status">加载中...</span></p>
+        <p><strong>版本:</strong> <span id="version">加载中...</span></p>
+        <p><strong>最后更新:</strong> <span id="timestamp">加载中...</span></p>
+        <button onclick="refreshStatus()">🔄 刷新状态</button>
     </div>
 
-    <div class="container">
-        <h2>📈 Stock Analysis Tool</h2>
+    <div class="analysis-container">
+        <h2>📈 智能股票分析</h2>
         <div class="api-test">
-            <div>
-                <label><strong>Stock Symbol:</strong></label><br>
-                <input type="text" id="symbol" value="AAPL" placeholder="Enter stock symbol (e.g., AAPL, NVDA, TSLA)">
+            <div class="input-group">
+                <label>股票代码:</label>
+                <input type="text" id="symbol" value="000001.SZ" placeholder="输入股票代码 (如: 000001.SZ, 600036.SH)">
+                <small>支持A股代码格式，如：000001.SZ (平安银行)，600036.SH (招商银行)</small>
             </div>
             
-            <div>
-                <label><strong>Analysis Date:</strong></label><br>
-                <input type="date" id="date" value="2024-12-01">
+            <div class="input-group">
+                <label>分析日期:</label>
+                <input type="date" id="date">
+            </div>
+
+            <div class="input-group">
+                <label>分析模式:</label>
+                <select id="analysis-mode">
+                    <option value="comprehensive">综合分析 (推荐)</option>
+                    <option value="technical">技术分析</option>
+                    <option value="fundamental">基本面分析</option>
+                    <option value="news">新闻情感分析</option>
+                </select>
             </div>
             
-            <br>
-            <button onclick="analyzeStock()">🔍 Analyze Stock</button>
+            <button id="analyze-btn" onclick="analyzeStock()">
+                🔍 开始深度分析
+            </button>
+            <button onclick="clearResults()">🗑️ 清空结果</button>
             
-            <h3>📋 Analysis Result:</h3>
-            <pre id="analysis-result">Click "Analyze Stock" to see detailed analysis results</pre>
+            <div id="analysis-progress" style="display: none;">
+                <h3>🧠 分析进度</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                </div>
+                <p id="progress-text">准备开始分析...</p>
+            </div>
+
+            <div id="analysis-results" style="display: none;">
+                <h3>📋 分析结果</h3>
+                
+                <div id="recommendation-section"></div>
+                
+                <div class="thinking-process">
+                    <h4>🤔 智能体思考过程</h4>
+                    <div id="thinking-content">分析完成后将显示详细的思考过程...</div>
+                </div>
+                
+                <div class="agent-section">
+                    <h4>👥 多智能体分析</h4>
+                    <div id="multi-agent-analysis">多个专业智能体的分析观点...</div>
+                </div>
+                
+                <div class="news-section">
+                    <h4>📰 新闻情感分析</h4>
+                    <div id="news-analysis">相关新闻和市场情感分析...</div>
+                </div>
+                
+                <div class="technical-section">
+                    <h4>📊 技术指标分析</h4>
+                    <div id="technical-analysis">技术指标和图表分析...</div>
+                </div>
+                
+                <details>
+                    <summary>🔧 详细数据 (JSON)</summary>
+                    <pre id="raw-data">原始分析数据...</pre>
+                </details>
+            </div>
         </div>
     </div>
 
     <div class="container">
-        <h2>🔧 API Testing</h2>
+        <h2>🔧 API 测试工具</h2>
         
         <div class="api-test">
-            <h4 class="endpoint-title">GET / - Basic Information</h4>
-            <p>Returns API status and available endpoints</p>
-            <button onclick="testBasicAPI()">Test Basic API</button>
-            <pre id="basic-result">Click to test...</pre>
-        </div>
-        
-        <div class="api-test">
-            <h4 class="endpoint-title">GET /health - Health Check</h4>
-            <p>Returns service health status</p>
-            <button onclick="testHealth()">Test Health Check</button>
-            <pre id="health-result">Click to test...</pre>
+            <h4>GET /health - 健康检查</h4>
+            <p>检查服务运行状态</p>
+            <button onclick="testHealth()">测试健康检查</button>
+            <pre id="health-result">点击测试...</pre>
         </div>
     </div>
 
     <script>
-        // Load basic info on page load
+        let analysisInProgress = false;
+
+        // 页面加载时初始化
         window.onload = function() {
-            testBasicAPI();
-            // Set today's date as default
+            refreshStatus();
             document.getElementById('date').value = new Date().toISOString().split('T')[0];
         }
 
-        async function testBasicAPI() {
-            try {
-                const response = await fetch('/api/info');
-                const data = await response.json();
-                document.getElementById('basic-result').textContent = JSON.stringify(data, null, 2);
-                
-                // Update status info
-                document.getElementById('status').textContent = data.status || 'Running';
-                document.getElementById('version').textContent = data.version || '1.0';
-                document.getElementById('timestamp').textContent = new Date(data.timestamp).toLocaleString() || 'Just now';
-            } catch (error) {
-                console.log('Testing basic API info...');
-                // Fallback to root endpoint
-                try {
-                    const response = await fetch('/');
-                    const data = await response.json();
-                    document.getElementById('basic-result').textContent = JSON.stringify(data, null, 2);
-                    
-                    document.getElementById('status').textContent = 'Running';
-                    document.getElementById('version').textContent = data.version || '1.0';
-                    document.getElementById('timestamp').textContent = new Date(data.timestamp).toLocaleString();
-                } catch (err) {
-                    document.getElementById('basic-result').textContent = 'Error: ' + err.message;
-                }
-            }
+        function refreshStatus() {
+            fetch('/api/info')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('status').textContent = '运行中';
+                    document.getElementById('version').textContent = data.version || '1.0.0';
+                    document.getElementById('timestamp').textContent = new Date(data.timestamp).toLocaleString('zh-CN');
+                })
+                .catch(error => {
+                    console.error('状态获取失败:', error);
+                    document.getElementById('status').textContent = '连接失败';
+                });
         }
 
-        async function testHealth() {
-            try {
-                const response = await fetch('/health');
-                const data = await response.json();
-                document.getElementById('health-result').textContent = JSON.stringify(data, null, 2);
-            } catch (error) {
-                document.getElementById('health-result').textContent = 'Error: ' + error.message;
-            }
+        function testHealth() {
+            fetch('/health')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('health-result').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    document.getElementById('health-result').textContent = '错误: ' + error.message;
+                });
         }
 
-        async function analyzeStock() {
+        function analyzeStock() {
+            if (analysisInProgress) return;
+
             const symbol = document.getElementById('symbol').value.trim();
             const date = document.getElementById('date').value;
+            const mode = document.getElementById('analysis-mode').value;
             
             if (!symbol) {
-                alert('Please enter a stock symbol');
+                alert('请输入股票代码');
                 return;
             }
 
-            // Show loading
-            document.getElementById('analysis-result').textContent = 'Analyzing ' + symbol.toUpperCase() + '... Please wait...';
+            // 开始分析
+            analysisInProgress = true;
+            const analyzeBtn = document.getElementById('analyze-btn');
+            analyzeBtn.disabled = true;
+            analyzeBtn.innerHTML = '<div class="loading"></div>正在分析...';
 
-            try {
-                const response = await fetch('/analyze', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        symbol: symbol.toUpperCase(),
-                        date: date
-                    })
-                });
-                
-                const data = await response.json();
-                document.getElementById('analysis-result').textContent = JSON.stringify(data, null, 2);
-            } catch (error) {
-                document.getElementById('analysis-result').textContent = 'Error: ' + error.message;
-            }
+            // 显示进度条
+            document.getElementById('analysis-progress').style.display = 'block';
+            document.getElementById('analysis-results').style.display = 'none';
+
+            // 模拟进度更新
+            simulateProgress();
+
+            // 发送分析请求
+            fetch('/analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    symbol: symbol.toUpperCase(),
+                    date: date,
+                    mode: mode,
+                    detailed: true
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayAnalysisResults(data);
+            })
+            .catch(error => {
+                document.getElementById('analysis-results').innerHTML = 
+                    '<div style="color: red;">分析失败: ' + error.message + '</div>';
+                document.getElementById('analysis-results').style.display = 'block';
+            })
+            .finally(() => {
+                analysisInProgress = false;
+                analyzeBtn.disabled = false;
+                analyzeBtn.innerHTML = '🔍 开始深度分析';
+                document.getElementById('analysis-progress').style.display = 'none';
+            });
+        }
+
+        function simulateProgress() {
+            const steps = [
+                { progress: 10, text: '连接数据源...' },
+                { progress: 25, text: '获取股票基本信息...' },
+                { progress: 40, text: '分析技术指标...' },
+                { progress: 60, text: '搜索相关新闻...' },
+                { progress: 80, text: '多智能体协同分析...' },
+                { progress: 95, text: '生成投资建议...' },
+                { progress: 100, text: '分析完成!' }
+            ];
+
+            let currentStep = 0;
+            const interval = setInterval(() => {
+                if (currentStep < steps.length && analysisInProgress) {
+                    const step = steps[currentStep];
+                    document.getElementById('progress-fill').style.width = step.progress + '%';
+                    document.getElementById('progress-text').textContent = step.text;
+                    currentStep++;
+                } else {
+                    clearInterval(interval);
+                }
+            }, 1000);
+        }
+
+        function displayAnalysisResults(data) {
+            // 显示推荐结果
+            const recommendation = data.analysis?.recommendation || 'HOLD';
+            const recommendationClass = recommendation.toLowerCase();
+            const recommendationText = {
+                'BUY': '🚀 买入',
+                'SELL': '📉 卖出', 
+                'HOLD': '⚖️ 持有'
+            }[recommendation] || '⚖️ 持有';
+
+            document.getElementById('recommendation-section').innerHTML = 
+                '<div class="recommendation ' + recommendationClass + '">' + 
+                recommendationText + ' - 置信度: ' + (data.analysis?.confidence || 0.75) + '</div>';
+
+            // 显示思考过程
+            document.getElementById('thinking-content').innerHTML = 
+                data.thinking_process || '智能体正在深度思考中...';
+
+            // 显示多智能体分析
+            document.getElementById('multi-agent-analysis').innerHTML = 
+                formatMultiAgentAnalysis(data.multi_agent_analysis);
+
+            // 显示新闻分析
+            document.getElementById('news-analysis').innerHTML = 
+                formatNewsAnalysis(data.news_analysis);
+
+            // 显示技术分析
+            document.getElementById('technical-analysis').innerHTML = 
+                formatTechnicalAnalysis(data.technical_indicators);
+
+            // 显示原始数据
+            document.getElementById('raw-data').textContent = JSON.stringify(data, null, 2);
+
+            document.getElementById('analysis-results').style.display = 'block';
+        }
+
+        function formatMultiAgentAnalysis(data) {
+            if (!data) return '多智能体分析数据暂不可用';
+            
+            let html = '<ul>';
+            Object.entries(data).forEach(([agent, analysis]) => {
+                html += '<li><strong>' + agent + ':</strong> ' + analysis + '</li>';
+            });
+            html += '</ul>';
+            return html;
+        }
+
+        function formatNewsAnalysis(data) {
+            if (!data) return '新闻分析数据暂不可用';
+            
+            return '<p><strong>情感得分:</strong> ' + (data.sentiment_score || 'N/A') + '</p>' +
+                   '<p><strong>相关新闻数量:</strong> ' + (data.news_count || 0) + '</p>' +
+                   '<p><strong>主要观点:</strong> ' + (data.summary || '暂无') + '</p>';
+        }
+
+        function formatTechnicalAnalysis(data) {
+            if (!data) return '技术分析数据暂不可用';
+            
+            let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">';
+            Object.entries(data).forEach(([indicator, value]) => {
+                html += '<div><strong>' + indicator + ':</strong> ' + value + '</div>';
+            });
+            html += '</div>';
+            return html;
+        }
+
+        function clearResults() {
+            document.getElementById('analysis-results').style.display = 'none';
+            document.getElementById('analysis-progress').style.display = 'none';
         }
     </script>
 </body>
