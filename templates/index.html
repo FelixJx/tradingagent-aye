@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TradingAgent API Dashboard</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        .container { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 15px; 
+            margin: 20px 0; 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        .api-test { 
+            background: #f8f9fa; 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin: 15px 0; 
+            border-left: 4px solid #007cba;
+        }
+        button { 
+            background: linear-gradient(45deg, #007cba, #0056b3); 
+            color: white; 
+            padding: 12px 24px; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        button:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,124,186,0.3);
+        }
+        pre { 
+            background: #2d3748; 
+            color: #e2e8f0; 
+            padding: 15px; 
+            border-radius: 8px; 
+            overflow-x: auto; 
+            font-size: 13px;
+            border: 1px solid #4a5568;
+        }
+        input { 
+            padding: 10px; 
+            margin: 8px; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 6px; 
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        input:focus {
+            outline: none;
+            border-color: #007cba;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #48bb78;
+            color: white;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .endpoint-title {
+            color: #2d3748;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 TradingAgent API Dashboard</h1>
+        <p>Real-time Stock Analysis API</p>
+    </div>
+    
+    <div class="container">
+        <h2>📊 API Status</h2>
+        <p><strong>Status:</strong> <span class="status-badge" id="status">Loading...</span></p>
+        <p><strong>Version:</strong> <span id="version">Loading...</span></p>
+        <p><strong>Last Updated:</strong> <span id="timestamp">Loading...</span></p>
+        <button onclick="testBasicAPI()">🔄 Refresh Status</button>
+    </div>
+
+    <div class="container">
+        <h2>📈 Stock Analysis Tool</h2>
+        <div class="api-test">
+            <div>
+                <label><strong>Stock Symbol:</strong></label><br>
+                <input type="text" id="symbol" value="AAPL" placeholder="Enter stock symbol (e.g., AAPL, NVDA, TSLA)">
+            </div>
+            
+            <div>
+                <label><strong>Analysis Date:</strong></label><br>
+                <input type="date" id="date" value="2024-12-01">
+            </div>
+            
+            <br>
+            <button onclick="analyzeStock()">🔍 Analyze Stock</button>
+            
+            <h3>📋 Analysis Result:</h3>
+            <pre id="analysis-result">Click "Analyze Stock" to see detailed analysis results</pre>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🔧 API Testing</h2>
+        
+        <div class="api-test">
+            <h4 class="endpoint-title">GET / - Basic Information</h4>
+            <p>Returns API status and available endpoints</p>
+            <button onclick="testBasicAPI()">Test Basic API</button>
+            <pre id="basic-result">Click to test...</pre>
+        </div>
+        
+        <div class="api-test">
+            <h4 class="endpoint-title">GET /health - Health Check</h4>
+            <p>Returns service health status</p>
+            <button onclick="testHealth()">Test Health Check</button>
+            <pre id="health-result">Click to test...</pre>
+        </div>
+    </div>
+
+    <script>
+        // Load basic info on page load
+        window.onload = function() {
+            testBasicAPI();
+            // Set today's date as default
+            document.getElementById('date').value = new Date().toISOString().split('T')[0];
+        }
+
+        async function testBasicAPI() {
+            try {
+                const response = await fetch('/api/info');
+                const data = await response.json();
+                document.getElementById('basic-result').textContent = JSON.stringify(data, null, 2);
+                
+                // Update status info
+                document.getElementById('status').textContent = data.status || 'Running';
+                document.getElementById('version').textContent = data.version || '1.0';
+                document.getElementById('timestamp').textContent = new Date(data.timestamp).toLocaleString() || 'Just now';
+            } catch (error) {
+                console.log('Testing basic API info...');
+                // Fallback to root endpoint
+                try {
+                    const response = await fetch('/');
+                    const data = await response.json();
+                    document.getElementById('basic-result').textContent = JSON.stringify(data, null, 2);
+                    
+                    document.getElementById('status').textContent = 'Running';
+                    document.getElementById('version').textContent = data.version || '1.0';
+                    document.getElementById('timestamp').textContent = new Date(data.timestamp).toLocaleString();
+                } catch (err) {
+                    document.getElementById('basic-result').textContent = 'Error: ' + err.message;
+                }
+            }
+        }
+
+        async function testHealth() {
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                document.getElementById('health-result').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('health-result').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function analyzeStock() {
+            const symbol = document.getElementById('symbol').value.trim();
+            const date = document.getElementById('date').value;
+            
+            if (!symbol) {
+                alert('Please enter a stock symbol');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('analysis-result').textContent = 'Analyzing ' + symbol.toUpperCase() + '... Please wait...';
+
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        symbol: symbol.toUpperCase(),
+                        date: date
+                    })
+                });
+                
+                const data = await response.json();
+                document.getElementById('analysis-result').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('analysis-result').textContent = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
