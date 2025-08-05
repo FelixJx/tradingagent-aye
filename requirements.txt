@@ -5,16 +5,16 @@ gunicorn==21.2.0
 requests==2.31.0
 
 # Data Processing (Essential)
-pandas==2.0.3
+pandas==2.3.1
 numpy==1.24.4
 
 # Real-time Data Sources
-akshare==1.14.20
+akshare==1.17.28
 tushare==1.2.89
 
 # AI and LLM Services
-dashscope==1.17.0
-openai==1.3.5
+dashscope==1.24.1
+openai==1.98.0
 
 # News and Search
 tavily-python==0.3.0
