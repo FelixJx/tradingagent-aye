@@ -7,6 +7,7 @@ requests>=2.31.0
 pandas>=2.0.0,<3.0.0
 numpy>=1.24.0,<2.0.0
 akshare>=1.17.26
+tushare>=1.2.89
 
 # Machine Learning and AI - LangChain Full Stack
 langchain>=0.3.0,<0.4.0
@@ -16,6 +17,10 @@ langchain-openai>=0.2.0,<0.3.0
 
 # OpenAI and Alternative LLMs
 openai>=1.0.0,<2.0.0
+dashscope>=1.17.0
+
+# Web Search and News
+tavily-python>=0.3.0
 
 # Technical Analysis
 stockstats>=0.6.0

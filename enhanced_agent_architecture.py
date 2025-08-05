@@ -51,6 +51,17 @@ try:
 except ImportError:
     from config_simple import get_simple_config as get_config
 
+# 导入新的服务
+try:
+    from real_time_data_service import get_data_service
+    from news_search_service import get_news_service  
+    from enhanced_llm_service import get_llm_service
+    HAS_ENHANCED_SERVICES = True
+    print("✅ Enhanced services successfully imported")
+except ImportError as e:
+    print(f"⚠️ Enhanced services not available: {e}")
+    HAS_ENHANCED_SERVICES = False
+
 class MarketRegime(Enum):
     BULL_MARKET = "bull_market"
     BEAR_MARKET = "bear_market"
@@ -93,8 +104,58 @@ class UnifiedDataService:
         self.config = config
         self.tushare_available = bool(config.tushare_token)
         
+        # 初始化增强服务
+        if HAS_ENHANCED_SERVICES:
+            self.data_service = get_data_service()
+            self.news_service = get_news_service()
+            print("✅ Enhanced data services initialized")
+        else:
+            self.data_service = None
+            self.news_service = None
+        
     async def get_comprehensive_data(self, symbol: str) -> MarketData:
         """获取全面的市场数据"""
+        if HAS_ENHANCED_SERVICES and self.data_service:
+            # 使用增强服务获取真实数据
+            return await self._get_enhanced_data(symbol)
+        else:
+            # 使用原有方法作为备用
+            return await self._get_fallback_data(symbol)
+    
+    async def _get_enhanced_data(self, symbol: str) -> MarketData:
+        """使用增强服务获取数据"""
+        tasks = [
+            self.data_service.get_real_time_quote(symbol),
+            self.data_service.get_historical_data(symbol, "1y"),
+            self.data_service.get_company_info(symbol),
+            self.news_service.search_stock_news(symbol, limit=20),
+            self._get_macro_data()
+        ]
+        
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        # 处理实时行情
+        quote_data = results[0] if not isinstance(results[0], Exception) else {}
+        hist_data = results[1] if not isinstance(results[1], Exception) else pd.DataFrame()
+        company_info = results[2] if not isinstance(results[2], Exception) else {}
+        news_data = results[3] if not isinstance(results[3], Exception) else []
+        macro_data = results[4] if not isinstance(results[4], Exception) else {}
+        
+        # 计算技术指标
+        technical_indicators = await self._calculate_technical_indicators(hist_data) if not hist_data.empty else {}
+        
+        return MarketData(
+            symbol=symbol,
+            price_data=hist_data,
+            financial_data={'quote': quote_data, 'company': company_info},
+            news_data=news_data,
+            technical_indicators=technical_indicators,
+            macro_data=macro_data,
+            timestamp=datetime.now()
+        )
+    
+    async def _get_fallback_data(self, symbol: str) -> MarketData:
+        """备用数据获取方法"""
         tasks = [
             self._get_price_data(symbol),
             self._get_financial_data(symbol),
@@ -114,6 +175,63 @@ class UnifiedDataService:
             macro_data=results[4] if not isinstance(results[4], Exception) else {},
             timestamp=datetime.now()
         )
+    
+    async def _calculate_technical_indicators(self, df: pd.DataFrame) -> Dict:
+        """计算技术指标"""
+        if df.empty or not HAS_PANDAS:
+            return {}
+        
+        try:
+            indicators = {}
+            
+            # 使用收盘价列，兼容不同的列名
+            close_col = None
+            for col in ['收盘', 'close', 'Close']:
+                if col in df.columns:
+                    close_col = col
+                    break
+            
+            if close_col is None:
+                return {}
+            
+            close_prices = df[close_col]
+            
+            # 移动平均线
+            for period in [5, 10, 20, 60, 120, 250]:
+                if len(close_prices) >= period:
+                    indicators[f'MA{period}'] = close_prices.rolling(period).mean().iloc[-1]
+            
+            # RSI
+            if len(close_prices) >= 14:
+                delta = close_prices.diff()
+                gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
+                loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
+                rs = gain / loss
+                indicators['RSI'] = (100 - (100 / (1 + rs))).iloc[-1]
+            
+            # MACD
+            if len(close_prices) >= 26:
+                exp1 = close_prices.ewm(span=12).mean()
+                exp2 = close_prices.ewm(span=26).mean()
+                macd = exp1 - exp2
+                signal = macd.ewm(span=9).mean()
+                indicators['MACD'] = macd.iloc[-1]
+                indicators['MACD_Signal'] = signal.iloc[-1]
+                indicators['MACD_Histogram'] = (macd - signal).iloc[-1]
+            
+            # 布林带
+            if len(close_prices) >= 20:
+                bb_mean = close_prices.rolling(20).mean()
+                bb_std = close_prices.rolling(20).std()
+                indicators['BB_Upper'] = (bb_mean + 2 * bb_std).iloc[-1]
+                indicators['BB_Middle'] = bb_mean.iloc[-1]
+                indicators['BB_Lower'] = (bb_mean - 2 * bb_std).iloc[-1]
+            
+            return indicators
+            
+        except Exception as e:
+            print(f"Technical indicators calculation error: {e}")
+            return {}
     
     async def _get_price_data(self, symbol: str) -> pd.DataFrame:
         """获取价格数据"""
@@ -629,7 +747,10 @@ class EnhancedTradingSystem:
     def _initialize_llm(self):
         """初始化LLM"""
         try:
-            if self.config.dashscope_api_key:
+            if HAS_ENHANCED_SERVICES:
+                # 使用增强的LLM服务
+                return get_llm_service()
+            elif self.config.dashscope_api_key and HAS_LANGCHAIN:
                 from langchain_community.llms import Tongyi
                 return Tongyi(
                     dashscope_api_key=self.config.dashscope_api_key,

@@ -1,0 +1,26 @@
+# Production Environment Variables for Trading Agent
+# Copy these to your Render Environment Variables
+
+# Tushare API (Real-time stock data)
+TUSHARE_TOKEN=b34d8920b99b43d48df7e792a4708a29f868feeee30d9c84b54bf065
+
+# Alibaba Cloud DashScope (LLM service)
+DASHSCOPE_API_KEY=sk-e050041b41674ed7b87644895ebae718
+
+# Tavily Search API (News and market intelligence)
+TAVILY_API_KEY=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
+
+# Flask Configuration
+FLASK_ENV=production
+FLASK_DEBUG=False
+PORT=5000
+
+# Optional: Other LLM APIs
+OPENAI_API_KEY=your_openai_api_key_here
+DEEPSEEK_API_KEY=your_deepseek_api_key_here
+
+# Feature Flags
+ENABLE_REAL_TIME_DATA=true
+ENABLE_LLM_ANALYSIS=true
+ENABLE_NEWS_SEARCH=true
+ENABLE_MULTI_AGENT_DEBATE=true

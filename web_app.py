@@ -37,7 +37,13 @@ def check_advanced_features():
         'langchain': False,
         'akshare': False,
         'pandas': False,
-        'enhanced_agent': False
+        'tushare': False,
+        'dashscope': False,
+        'tavily': False,
+        'enhanced_agent': False,
+        'real_time_data': False,
+        'news_search': False,
+        'enhanced_llm': False
     }
     
     try:
@@ -62,11 +68,53 @@ def check_advanced_features():
         print("❌ Pandas not available")
     
     try:
+        import tushare
+        features['tushare'] = True
+        print("✅ Tushare available")
+    except ImportError:
+        print("❌ Tushare not available")
+    
+    try:
+        import dashscope
+        features['dashscope'] = True
+        print("✅ DashScope available")
+    except ImportError:
+        print("❌ DashScope not available")
+    
+    try:
+        from tavily import TavilyClient
+        features['tavily'] = True
+        print("✅ Tavily available")
+    except ImportError:
+        print("❌ Tavily not available")
+    
+    try:
         from enhanced_agent_architecture import EnhancedTradingSystem
         features['enhanced_agent'] = True
         print("✅ Enhanced Agent Architecture available")
     except ImportError as e:
         print(f"❌ Enhanced Agent Architecture not available: {e}")
+    
+    try:
+        from real_time_data_service import get_data_service
+        features['real_time_data'] = True
+        print("✅ Real-time Data Service available")
+    except ImportError:
+        print("❌ Real-time Data Service not available")
+    
+    try:
+        from news_search_service import get_news_service
+        features['news_search'] = True
+        print("✅ News Search Service available")
+    except ImportError:
+        print("❌ News Search Service not available")
+    
+    try:
+        from enhanced_llm_service import get_llm_service
+        features['enhanced_llm'] = True
+        print("✅ Enhanced LLM Service available")
+    except ImportError:
+        print("❌ Enhanced LLM Service not available")
     
     return features
 
@@ -408,19 +456,126 @@ def health():
 @app.route('/features')
 def feature_status():
     """功能状态检查接口"""
+    core_features = ['langchain', 'akshare', 'pandas', 'enhanced_agent']
+    advanced_features = ['tushare', 'dashscope', 'tavily', 'real_time_data', 'news_search', 'enhanced_llm']
+    
+    core_available = all(AVAILABLE_FEATURES.get(f, False) for f in core_features)
+    advanced_available = all(AVAILABLE_FEATURES.get(f, False) for f in advanced_features)
+    
     return jsonify({
         'status': 'ok',
         'timestamp': datetime.now().isoformat(),
         'available_features': AVAILABLE_FEATURES,
         'capabilities': {
             'basic_analysis': True,
-            'real_time_data': AVAILABLE_FEATURES['akshare'],
-            'ai_reasoning': AVAILABLE_FEATURES['langchain'],
-            'enhanced_agents': AVAILABLE_FEATURES['enhanced_agent'],
-            'technical_analysis': AVAILABLE_FEATURES['pandas']
+            'real_time_data': AVAILABLE_FEATURES.get('tushare', False) or AVAILABLE_FEATURES.get('akshare', False),
+            'ai_reasoning': AVAILABLE_FEATURES.get('enhanced_llm', False) or AVAILABLE_FEATURES.get('langchain', False),
+            'enhanced_agents': AVAILABLE_FEATURES.get('enhanced_agent', False),
+            'technical_analysis': AVAILABLE_FEATURES.get('pandas', False),
+            'news_search': AVAILABLE_FEATURES.get('news_search', False),
+            'multi_llm_support': AVAILABLE_FEATURES.get('dashscope', False)
         },
-        'recommendation': 'Full AI analysis' if all(AVAILABLE_FEATURES.values()) else 'Basic analysis only'
+        'system_level': 'advanced' if advanced_available else ('core' if core_available else 'basic'),
+        'recommendation': (
+            'Full AI analysis with real-time data' if advanced_available else
+            'Standard AI analysis' if core_available else
+            'Basic analysis only'
+        ),
+        'missing_features': [f for f in advanced_features if not AVAILABLE_FEATURES.get(f, False)]
     })
+
+@app.route('/test-real-data/<symbol>')
+def test_real_data(symbol):
+    """测试实时数据获取"""
+    if not AVAILABLE_FEATURES.get('real_time_data', False):
+        return jsonify({
+            'error': 'Real-time data service not available',
+            'available_features': AVAILABLE_FEATURES
+        }), 503
+    
+    try:
+        from real_time_data_service import get_data_service
+        data_service = get_data_service()
+        
+        # 由于是同步端点，使用asyncio.run()
+        import asyncio
+        quote_data = asyncio.run(data_service.get_real_time_quote(symbol))
+        
+        return jsonify({
+            'status': 'success',
+            'symbol': symbol,
+            'data': quote_data,
+            'timestamp': datetime.now().isoformat()
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'error': f'Real-time data test failed: {str(e)}',
+            'symbol': symbol
+        }), 500
+
+@app.route('/test-news/<symbol>')
+def test_news(symbol):
+    """测试新闻搜索"""
+    if not AVAILABLE_FEATURES.get('news_search', False):
+        return jsonify({
+            'error': 'News search service not available',
+            'available_features': AVAILABLE_FEATURES
+        }), 503
+    
+    try:
+        from news_search_service import get_news_service
+        news_service = get_news_service()
+        
+        # 由于是同步端点，使用asyncio.run()
+        import asyncio
+        news_data = asyncio.run(news_service.search_stock_news(symbol, limit=5))
+        
+        return jsonify({
+            'status': 'success',
+            'symbol': symbol,
+            'news_count': len(news_data),
+            'news': news_data,
+            'timestamp': datetime.now().isoformat()
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'error': f'News search test failed: {str(e)}',
+            'symbol': symbol
+        }), 500
+
+@app.route('/test-llm')
+def test_llm():
+    """测试LLM服务"""
+    if not AVAILABLE_FEATURES.get('enhanced_llm', False):
+        return jsonify({
+            'error': 'Enhanced LLM service not available',
+            'available_features': AVAILABLE_FEATURES
+        }), 503
+    
+    try:
+        from enhanced_llm_service import get_llm_service
+        llm_service = get_llm_service()
+        
+        # 测试基础调用
+        import asyncio
+        test_prompt = "请简要分析当前A股市场的整体趋势，不超过100字。"
+        response = asyncio.run(llm_service.ainvoke(test_prompt, model='qwen-turbo'))
+        
+        return jsonify({
+            'status': 'success',
+            'prompt': test_prompt,
+            'response': response,
+            'model': 'qwen-turbo',
+            'timestamp': datetime.now().isoformat()
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'error': f'LLM test failed: {str(e)}',
+            'prompt': test_prompt
+        }), 500
 
 @app.route('/analyze', methods=['POST'])
 def analyze_stock():
