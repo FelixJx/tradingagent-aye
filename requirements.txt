@@ -9,7 +9,7 @@ pandas==2.3.1
 numpy==1.24.4
 
 # Real-time Data Sources
-akshare==1.17.28
+akshare==1.16.99
 tushare==1.2.89
 
 # AI and LLM Services
@@ -25,7 +25,6 @@ python-dateutil==2.8.2
 pytz==2023.3
 
 # Optional packages that may help
-aiohttp==3.8.6
 stockstats==0.6.2
 
 # Optional Advanced Features (install if available)
@@ -33,9 +32,7 @@ stockstats==0.6.2
 # langchain-core==0.2.0
 # langchain-community==0.2.0
 # pydantic==2.7.4
-# aiohttp==3.9.5
 # sqlalchemy==2.0.31
-# stockstats==0.6.2
 # tenacity==8.4.2
 # jsonpatch==1.33
 # pyyaml==6.0.1
