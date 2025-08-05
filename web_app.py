@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, Response
 import os
 import sys
 import json
@@ -6,6 +6,8 @@ import traceback
 from datetime import datetime, timedelta
 import time
 import threading
+import queue
+import uuid
 
 # 添加项目路径
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -1002,6 +1004,143 @@ def analyze_stock():
             'error': f'分析失败: {str(e)}',
             'traceback': traceback.format_exc() if app.debug else None
         }), 500
+
+@app.route('/stream-analyze')
+def stream_analyze():
+    """流式分析接口 - 支持Server-Sent Events"""
+    try:
+        symbol = request.args.get('symbol', '').upper()
+        mode = request.args.get('mode', 'comprehensive')
+        
+        if not symbol:
+            return jsonify({'error': '请提供股票代码'}), 400
+        
+        def generate_analysis_stream():
+            """生成分析流"""
+            try:
+                # 发送开始消息
+                yield f"data: {json.dumps({'type': 'step', 'step': 'init', 'status': 'active', 'message': f'🚀 开始分析股票 {symbol}', 'messageType': 'system'})}\n\n"
+                time.sleep(0.5)
+                
+                # 步骤1: 系统初始化
+                flask_env = os.getenv("FLASK_ENV", "development")
+                yield f"data: {json.dumps({'type': 'thinking', 'content': f'🔧 系统环境检查: Flask环境={flask_env}, 真实数据={REAL_DATA_AVAILABLE}'})}\n\n"
+                time.sleep(0.3)
+                
+                yield f"data: {json.dumps({'type': 'step', 'step': 'init', 'status': 'completed', 'description': '系统环境检查完成'})}\n\n"
+                
+                # 步骤2: 数据获取
+                yield f"data: {json.dumps({'type': 'step', 'step': 'data', 'status': 'active', 'message': '📊 获取股票数据中...', 'messageType': 'system'})}\n\n"
+                
+                # 实际获取股票数据
+                stock_data = get_stock_data(symbol)
+                if 'error' in stock_data:
+                    yield f"data: {json.dumps({'type': 'error', 'step': 'data', 'message': stock_data['error']})}\n\n"
+                    return
+                
+                stock_name = stock_data.get("name", symbol)
+                current_price = stock_data.get("current_price", "未知")
+                data_source = stock_data.get("data_source", "unknown")
+                yield f"data: {json.dumps({'type': 'thinking', 'content': f'✅ 股票数据获取成功: {stock_name}, 当前价格: {current_price}元, 数据源: {data_source}'})}\n\n"
+                time.sleep(0.5)
+                
+                yield f"data: {json.dumps({'type': 'step', 'step': 'data', 'status': 'completed', 'description': f'{data_source}数据获取完成'})}\n\n"
+                
+                # 步骤3: 新闻分析
+                yield f"data: {json.dumps({'type': 'step', 'step': 'news', 'status': 'active', 'message': '📰 搜索相关新闻...', 'messageType': 'system'})}\n\n"
+                
+                news_data = get_news_analysis(symbol)
+                sentiment_score = news_data.get("sentiment_score", 0)
+                news_count = news_data.get("news_count", 0)
+                sentiment_text = news_data.get("sentiment_text", "中性")
+                yield f"data: {json.dumps({'type': 'thinking', 'content': f'📰 新闻分析完成: 情感得分={sentiment_score}, 新闻数量={news_count}条, 整体情感={sentiment_text}'})}\n\n"
+                time.sleep(0.5)
+                
+                yield f"data: {json.dumps({'type': 'step', 'step': 'news', 'status': 'completed', 'description': f'分析{news_count}条新闻,情感{sentiment_text}'})}\n\n"
+                
+                # 计算技术指标
+                technical_data = get_technical_indicators(symbol)
+                rsi = technical_data.get("RSI", "未知")
+                macd = technical_data.get("MACD", "未知")
+                kdj_k = technical_data.get("KDJ_K", "未知")
+                yield f"data: {json.dumps({'type': 'thinking', 'content': f'📊 技术指标计算完成: RSI={rsi}, MACD={macd}, KDJ_K={kdj_k}'})}\n\n"
+                
+                # 步骤4: 多智能体分析
+                yield f"data: {json.dumps({'type': 'step', 'step': 'agents', 'status': 'active', 'message': '🤖 启动多智能体协同分析...', 'messageType': 'system'})}\n\n"
+                
+                # 模拟各个分析师的工作过程
+                agents = ['基本面分析师', '技术分析师', '情感分析师', '风险控制师', '量化分析师']
+                
+                for i, agent in enumerate(agents):
+                    yield f"data: {json.dumps({'type': 'thinking', 'content': f'🤖 {agent}: 正在进行专业分析...', 'messageType': 'agent'})}\n\n"
+                    time.sleep(0.8)
+                
+                # 执行真实的多智能体分析
+                agents_analysis = multi_agent_analysis(symbol, stock_data, news_data, technical_data)
+                
+                # 显示各分析师的结果
+                for agent, analysis in agents_analysis.items():
+                    if agent != '综合决策师':  # 综合决策师单独处理
+                        yield f"data: {json.dumps({'type': 'thinking', 'content': f'💡 {agent}: {analysis[:100]}...', 'messageType': 'agent'})}\n\n"
+                        time.sleep(0.3)
+                
+                yield f"data: {json.dumps({'type': 'step', 'step': 'agents', 'status': 'completed', 'description': f'5个专业分析师协同工作完成'})}\n\n"
+                
+                # 步骤5: 综合决策
+                yield f"data: {json.dumps({'type': 'step', 'step': 'synthesis', 'status': 'active', 'message': '⚖️ 整合观点生成最终建议...', 'messageType': 'system'})}\n\n"
+                
+                if '综合决策师' in agents_analysis:
+                    synthesis_content = agents_analysis["综合决策师"][:120]
+                    yield f"data: {json.dumps({'type': 'thinking', 'content': f'🎯 综合决策师: {synthesis_content}...', 'messageType': 'agent'})}\n\n"
+                
+                # 生成最终推荐
+                recommendation = generate_final_recommendation(symbol, stock_data, news_data, technical_data, agents_analysis)
+                
+                score = recommendation.get("score", 0)
+                yield f"data: {json.dumps({'type': 'step', 'step': 'synthesis', 'status': 'completed', 'description': f'综合评分: {score}分'})}\n\n"
+                
+                # 步骤6: 分析完成
+                yield f"data: {json.dumps({'type': 'step', 'step': 'complete', 'status': 'completed', 'message': '✅ 分析完成！', 'messageType': 'system'})}\n\n"
+                
+                # 发送最终结果
+                result = {
+                    'symbol': symbol,
+                    'name': stock_data.get('name', ''),
+                    'analysis': recommendation,
+                    'multi_agent_analysis': agents_analysis,
+                    'news_analysis': news_data,
+                    'technical_indicators': technical_data,
+                    'stock_data': stock_data,
+                    'timestamp': datetime.now().isoformat()
+                }
+                
+                yield f"data: {json.dumps({'type': 'result', 'result': result})}\n\n"
+                yield f"data: {json.dumps({'type': 'complete'})}\n\n"
+                
+            except Exception as e:
+                error_msg = f"分析过程出现异常: {str(e)}"
+                yield f"data: {json.dumps({'type': 'error', 'message': error_msg})}\n\n"
+        
+        return Response(
+            generate_analysis_stream(),
+            mimetype='text/event-stream',
+            headers={
+                'Cache-Control': 'no-cache',
+                'Connection': 'keep-alive',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Cache-Control'
+            }
+        )
+        
+    except Exception as e:
+        return jsonify({
+            'error': f'流式分析启动失败: {str(e)}'
+        }), 500
+
+@app.route('/ai-dashboard')
+def ai_dashboard():
+    """AI分析仪表板页面"""
+    return render_template('ai_analysis_dashboard.html')
 
 # 定期清理缓存
 def cleanup_cache():

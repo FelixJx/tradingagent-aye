@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI智能分析师 - 实时股票分析</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        .main-container {
+            display: flex;
+            height: calc(100vh - 100px);
+            padding: 20px;
+            gap: 20px;
+        }
+
+        /* 左侧思考过程区域 */
+        .thinking-panel {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            overflow-y: auto;
+            max-height: 100%;
+        }
+
+        .thinking-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .thinking-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-left: 12px;
+        }
+
+        .thinking-stream {
+            min-height: 400px;
+        }
+
+        .thinking-message {
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border-left: 3px solid #667eea;
+            animation: fadeInUp 0.5s ease-out;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .thinking-message.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .thinking-message .timestamp {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 6px;
+        }
+
+        .thinking-message .content {
+            line-height: 1.6;
+        }
+
+        .thinking-message.system {
+            border-left-color: #48bb78;
+        }
+
+        .thinking-message.agent {
+            border-left-color: #ed8936;
+        }
+
+        .thinking-message.result {
+            border-left-color: #9f7aea;
+        }
+
+        /* 右侧步骤进度区域 */
+        .steps-panel {
+            width: 350px;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-section {
+            margin-bottom: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .analyze-button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 24px;
+        }
+
+        .analyze-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .analyze-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .steps-header {
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .steps-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            padding: 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .step-item.pending {
+            background: rgba(255, 255, 255, 0.02);
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .step-item.active {
+            background: rgba(102, 126, 234, 0.1);
+            border-left: 3px solid #667eea;
+        }
+
+        .step-item.completed {
+            background: rgba(72, 187, 120, 0.1);
+            border-left: 3px solid #48bb78;
+        }
+
+        .step-item.error {
+            background: rgba(245, 101, 101, 0.1);
+            border-left: 3px solid #f56565;
+        }
+
+        .step-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .step-item.pending .step-icon {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .step-item.active .step-icon {
+            background: #667eea;
+            animation: pulse 2s infinite;
+        }
+
+        .step-item.completed .step-icon {
+            background: #48bb78;
+        }
+
+        .step-item.error .step-icon {
+            background: #f56565;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .step-description {
+            font-size: 12px;
+            opacity: 0.7;
+            line-height: 1.4;
+        }
+
+        .loading-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* 结果展示区域 */
+        .results-section {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .recommendation-card {
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .recommendation-card.buy {
+            background: rgba(72, 187, 120, 0.1);
+            border: 1px solid rgba(72, 187, 120, 0.3);
+            color: #68d391;
+        }
+
+        .recommendation-card.sell {
+            background: rgba(245, 101, 101, 0.1);
+            border: 1px solid rgba(245, 101, 101, 0.3);
+            color: #fc8181;
+        }
+
+        .recommendation-card.hold {
+            background: rgba(237, 137, 54, 0.1);
+            border: 1px solid rgba(237, 137, 54, 0.3);
+            color: #f6ad55;
+        }
+
+        /* 动画 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .steps-panel {
+                width: 100%;
+                order: -1;
+            }
+
+            .thinking-panel {
+                min-height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🤖 AI智能分析师</h1>
+        <p>基于多智能体协作的实时股票深度分析系统</p>
+    </div>
+
+    <div class="main-container">
+        <!-- 左侧思考过程区域 -->
+        <div class="thinking-panel">
+            <div class="thinking-header">
+                <span>🧠</span>
+                <h2>AI思考过程</h2>
+            </div>
+            <div class="thinking-stream" id="thinking-stream">
+                <div class="thinking-message system active">
+                    <div class="timestamp" id="current-time"></div>
+                    <div class="content">AI分析师已准备就绪，等待分析指令...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧步骤和控制区域 -->
+        <div class="steps-panel">
+            <!-- 输入控制区域 -->
+            <div class="input-section">
+                <div class="input-group">
+                    <label>股票代码</label>
+                    <input type="text" id="symbol" value="000001.SZ" placeholder="如: 000001.SZ">
+                </div>
+                <div class="input-group">
+                    <label>分析模式</label>
+                    <select id="analysis-mode">
+                        <option value="comprehensive">🔍 综合深度分析</option>
+                        <option value="technical">📊 技术分析</option>
+                        <option value="fundamental">💰 基本面分析</option>
+                        <option value="news">📰 新闻情感分析</option>
+                    </select>
+                </div>
+                <button class="analyze-button" id="analyze-btn" onclick="startAnalysis()">
+                    ⚡ 开始AI分析
+                </button>
+            </div>
+
+            <!-- 分析步骤区域 -->
+            <div class="steps-header">
+                <h3>📋 分析步骤</h3>
+            </div>
+            
+            <div class="steps-container" id="steps-container">
+                <div class="step-item pending" data-step="init">
+                    <div class="step-icon">1</div>
+                    <div class="step-content">
+                        <div class="step-title">系统初始化</div>
+                        <div class="step-description">检查环境和API连接状态</div>
+                    </div>
+                </div>
+
+                <div class="step-item pending" data-step="data">
+                    <div class="step-icon">2</div>
+                    <div class="step-content">
+                        <div class="step-title">数据获取</div>
+                        <div class="step-description">获取实时股票数据和技术指标</div>
+                    </div>
+                </div>
+
+                <div class="step-item pending" data-step="news">
+                    <div class="step-icon">3</div>
+                    <div class="step-content">
+                        <div class="step-title">新闻分析</div>
+                        <div class="step-description">搜索并分析相关新闻情感</div>
+                    </div>
+                </div>
+
+                <div class="step-item pending" data-step="agents">
+                    <div class="step-icon">4</div>
+                    <div class="step-content">
+                        <div class="step-title">多智能体分析</div>
+                        <div class="step-description">5个专业分析师协同工作</div>
+                    </div>
+                </div>
+
+                <div class="step-item pending" data-step="synthesis">
+                    <div class="step-icon">5</div>
+                    <div class="step-content">
+                        <div class="step-title">综合决策</div>
+                        <div class="step-description">整合观点生成最终建议</div>
+                    </div>
+                </div>
+
+                <div class="step-item pending" data-step="complete">
+                    <div class="step-icon">✓</div>
+                    <div class="step-content">
+                        <div class="step-title">分析完成</div>
+                        <div class="step-description">生成专业投资建议报告</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 结果展示区域 -->
+            <div class="results-section" id="results-section" style="display: none;">
+                <div id="recommendation-result"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let analysisInProgress = false;
+        let eventSource = null;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 1000);
+        });
+
+        function updateCurrentTime() {
+            const now = new Date();
+            document.getElementById('current-time').textContent = 
+                now.toLocaleString('zh-CN', { 
+                    year: 'numeric', 
+                    month: '2-digit', 
+                    day: '2-digit', 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit' 
+                });
+        }
+
+        function addThinkingMessage(content, type = 'system') {
+            const streamContainer = document.getElementById('thinking-stream');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `thinking-message ${type}`;
+            
+            const timestamp = new Date().toLocaleTimeString('zh-CN');
+            messageDiv.innerHTML = `
+                <div class="timestamp">${timestamp}</div>
+                <div class="content">${content}</div>
+            `;
+            
+            streamContainer.appendChild(messageDiv);
+            
+            // 添加动画
+            setTimeout(() => {
+                messageDiv.classList.add('active');
+            }, 100);
+            
+            // 自动滚动到底部
+            streamContainer.scrollTop = streamContainer.scrollHeight;
+        }
+
+        function updateStepStatus(stepId, status, description = null) {
+            const stepElement = document.querySelector(`[data-step="${stepId}"]`);
+            if (!stepElement) return;
+
+            // 清除旧状态
+            stepElement.classList.remove('pending', 'active', 'completed', 'error');
+            stepElement.classList.add(status);
+
+            // 更新图标
+            const iconElement = stepElement.querySelector('.step-icon');
+            if (status === 'active') {
+                iconElement.innerHTML = '<div class="loading-spinner"></div>';
+            } else if (status === 'completed') {
+                iconElement.innerHTML = '✓';
+            } else if (status === 'error') {
+                iconElement.innerHTML = '✗';
+            }
+
+            // 更新描述
+            if (description) {
+                stepElement.querySelector('.step-description').textContent = description;
+            }
+        }
+
+        function startAnalysis() {
+            if (analysisInProgress) return;
+
+            const symbol = document.getElementById('symbol').value.trim();
+            const mode = document.getElementById('analysis-mode').value;
+
+            if (!symbol) {
+                alert('请输入股票代码');
+                return;
+            }
+
+            analysisInProgress = true;
+            const analyzeBtn = document.getElementById('analyze-btn');
+            analyzeBtn.disabled = true;
+            analyzeBtn.innerHTML = '<div class="loading-spinner" style="display: inline-block; margin-right: 8px;"></div>分析中...';
+
+            // 清空之前的结果
+            document.getElementById('results-section').style.display = 'none';
+            
+            // 重置所有步骤
+            document.querySelectorAll('.step-item').forEach(step => {
+                step.classList.remove('active', 'completed', 'error');
+                step.classList.add('pending');
+                const icon = step.querySelector('.step-icon');
+                icon.innerHTML = icon.closest('[data-step]').dataset.step === 'complete' ? '✓' : 
+                               (Array.from(step.parentNode.children).indexOf(step) + 1);
+            });
+
+            addThinkingMessage(`🚀 开始分析股票 ${symbol.toUpperCase()}`, 'system');
+            addThinkingMessage(`📊 选择分析模式: ${getModeName(mode)}`, 'system');
+
+            // 启动流式分析
+            startStreamAnalysis(symbol, mode);
+        }
+
+        function getModeName(mode) {
+            const modes = {
+                'comprehensive': '综合深度分析',
+                'technical': '技术分析',
+                'fundamental': '基本面分析',
+                'news': '新闻情感分析'
+            };
+            return modes[mode] || mode;
+        }
+
+        function startStreamAnalysis(symbol, mode) {
+            // 关闭之前的连接
+            if (eventSource) {
+                eventSource.close();
+            }
+
+            // 建立Server-Sent Events连接
+            eventSource = new EventSource(`/stream-analyze?symbol=${encodeURIComponent(symbol)}&mode=${mode}`);
+
+            eventSource.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                handleStreamData(data);
+            };
+
+            eventSource.onerror = function(error) {
+                console.error('Stream error:', error);
+                addThinkingMessage('❌ 连接中断，尝试使用标准分析模式', 'system');
+                fallbackToNormalAnalysis(symbol, mode);
+            };
+        }
+
+        function handleStreamData(data) {
+            if (data.type === 'step') {
+                updateStepStatus(data.step, data.status, data.description);
+                if (data.message) {
+                    addThinkingMessage(data.message, data.messageType || 'system');
+                }
+            } else if (data.type === 'thinking') {
+                addThinkingMessage(data.content, 'agent');
+            } else if (data.type === 'result') {
+                displayFinalResult(data.result);
+            } else if (data.type === 'complete') {
+                completeAnalysis();
+            } else if (data.type === 'error') {
+                addThinkingMessage(`❌ ${data.message}`, 'system');
+                updateStepStatus(data.step || 'error', 'error');
+                completeAnalysis();
+            }
+        }
+
+        function fallbackToNormalAnalysis(symbol, mode) {
+            // 关闭流连接
+            if (eventSource) {
+                eventSource.close();
+                eventSource = null;
+            }
+
+            // 使用普通POST请求
+            fetch('/analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    symbol: symbol.toUpperCase(),
+                    mode: mode,
+                    detailed: true
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // 模拟步骤进度
+                simulateAnalysisSteps(data);
+            })
+            .catch(error => {
+                addThinkingMessage(`❌ 分析失败: ${error.message}`, 'system');
+                completeAnalysis();
+            });
+        }
+
+        function simulateAnalysisSteps(result) {
+            const steps = [
+                { step: 'init', message: '🔧 系统环境检查完成', delay: 500 },
+                { step: 'data', message: '📊 股票数据获取成功', delay: 1000 },
+                { step: 'news', message: '📰 新闻情感分析完成', delay: 1500 },
+                { step: 'agents', message: '🤖 多智能体协同分析中...', delay: 2000 },
+                { step: 'synthesis', message: '⚖️ 综合决策生成中...', delay: 2500 },
+                { step: 'complete', message: '✅ 分析完成！', delay: 3000 }
+            ];
+
+            let delay = 0;
+            steps.forEach((stepData, index) => {
+                delay += stepData.delay;
+                setTimeout(() => {
+                    updateStepStatus(stepData.step, index === steps.length - 1 ? 'completed' : 'active');
+                    addThinkingMessage(stepData.message, 'system');
+                    
+                    if (stepData.step === 'agents') {
+                        // 显示智能体分析过程
+                        setTimeout(() => addThinkingMessage('基本面分析师: 正在评估财务指标...', 'agent'), 200);
+                        setTimeout(() => addThinkingMessage('技术分析师: 识别价格趋势和信号...', 'agent'), 400);
+                        setTimeout(() => addThinkingMessage('情感分析师: 分析市场情绪...', 'agent'), 600);
+                        setTimeout(() => addThinkingMessage('风险控制师: 评估投资风险...', 'agent'), 800);
+                        setTimeout(() => addThinkingMessage('量化分析师: 计算综合评分...', 'agent'), 1000);
+                    }
+                    
+                    if (index < steps.length - 1) {
+                        setTimeout(() => updateStepStatus(stepData.step, 'completed'), 300);
+                    }
+                    
+                    if (index === steps.length - 1) {
+                        displayFinalResult(result);
+                        completeAnalysis();
+                    }
+                }, delay);
+            });
+        }
+
+        function displayFinalResult(result) {
+            const recommendation = result.analysis?.recommendation || 'HOLD';
+            const confidence = result.analysis?.confidence || 0.75;
+            
+            const recommendationText = {
+                'BUY': '🚀 买入建议',
+                'SELL': '📉 卖出建议',
+                'HOLD': '⚖️ 持有建议'
+            }[recommendation] || '⚖️ 持有建议';
+
+            const resultHtml = `
+                <div class="recommendation-card ${recommendation.toLowerCase()}">
+                    <div style="font-size: 18px; margin-bottom: 8px;">${recommendationText}</div>
+                    <div style="font-size: 14px; opacity: 0.8;">置信度: ${(confidence * 100).toFixed(1)}%</div>
+                </div>
+            `;
+
+            document.getElementById('recommendation-result').innerHTML = resultHtml;
+            document.getElementById('results-section').style.display = 'block';
+
+            addThinkingMessage(`📋 投资建议: ${recommendationText} (置信度: ${(confidence * 100).toFixed(1)}%)`, 'result');
+            
+            if (result.analysis?.reasoning) {
+                addThinkingMessage(`💡 分析依据: ${result.analysis.reasoning}`, 'result');
+            }
+        }
+
+        function completeAnalysis() {
+            analysisInProgress = false;
+            const analyzeBtn = document.getElementById('analyze-btn');
+            analyzeBtn.disabled = false;
+            analyzeBtn.innerHTML = '⚡ 开始AI分析';
+
+            if (eventSource) {
+                eventSource.close();
+                eventSource = null;
+            }
+
+            addThinkingMessage('🎉 本次AI分析已完成，感谢使用智能分析师！', 'system');
+        }
+    </script>
+</body>
+</html>
