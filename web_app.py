@@ -731,6 +731,9 @@ def health():
         'status': 'healthy',
         'timestamp': datetime.now().isoformat(),
         'message': '系统运行正常',
+        'version': 'v2.1.0-real-agents',
+        'deploy_time': datetime.now().isoformat(),
+        'real_data_available': REAL_DATA_AVAILABLE,
         'services': {
             'web_server': 'running',
             'data_source': 'connected', 
