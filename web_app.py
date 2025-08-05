@@ -153,15 +153,19 @@ AVAILABLE_FEATURES = check_advanced_features()
 def get_stock_data(symbol):
     """获取股票数据 - 优先使用真实API数据"""
     try:
-        # 在生产环境中使用真实数据API
-        flask_env = getattr(config, 'flask_env', os.getenv('FLASK_ENV', 'development'))
+        # 强制检查环境变量 - 直接从os.getenv获取，确保准确性
+        flask_env = os.getenv('FLASK_ENV', 'development')
+        config_env = getattr(config, 'flask_env', 'unknown') if config else 'no_config'
         
+        print(f"🔧 Environment check: OS_ENV={flask_env}, CONFIG_ENV={config_env}, REAL_DATA={REAL_DATA_AVAILABLE}")
+        
+        # 使用直接的环境变量检查，不依赖config对象
         if REAL_DATA_AVAILABLE and flask_env == 'production':
-            print(f"🔄 Fetching real stock data for {symbol}")
+            print(f"🔄 Fetching REAL stock data for {symbol} (production mode)")
             return get_real_stock_data(symbol)
         
         # 开发环境或API不可用时使用模拟数据
-        print(f"⚠️ Using mock data for {symbol} (env: {flask_env}, real_data: {REAL_DATA_AVAILABLE})")
+        print(f"⚠️ Using MOCK data for {symbol} (env: {flask_env}, real_data: {REAL_DATA_AVAILABLE})")
         base_price = 100 + (hash(symbol) % 50)
         
         return {
@@ -198,15 +202,15 @@ def get_stock_name(symbol):
 def get_news_analysis(symbol):
     """获取新闻分析 - 优先使用真实API数据"""
     try:
-        # 在生产环境中使用真实新闻搜索API
-        flask_env = getattr(config, 'flask_env', os.getenv('FLASK_ENV', 'development'))
+        # 直接检查环境变量
+        flask_env = os.getenv('FLASK_ENV', 'development')
         
         if REAL_DATA_AVAILABLE and flask_env == 'production':
-            print(f"🔄 Fetching real news data for {symbol}")
+            print(f"🔄 Fetching REAL news data for {symbol}")
             return get_real_news_analysis(symbol)
         
         # 开发环境或API不可用时使用模拟数据
-        print(f"⚠️ Using mock news data for {symbol} (env: {flask_env}, real_data: {REAL_DATA_AVAILABLE})")
+        print(f"⚠️ Using MOCK news data for {symbol} (env: {flask_env}, real_data: {REAL_DATA_AVAILABLE})")
         sentiment_score = round((hash(symbol + 'news') % 200 - 100) / 100, 2)
         news_count = hash(symbol + 'count') % 20 + 5
         
@@ -254,10 +258,11 @@ def get_technical_indicators(symbol):
 def multi_agent_analysis(symbol, stock_data, news_data, technical_data):
     """多智能体分析 - 增强版LLM驱动分析"""
     try:
-        flask_env = getattr(config, 'flask_env', os.getenv('FLASK_ENV', 'development'))
+        # 直接检查环境变量
+        flask_env = os.getenv('FLASK_ENV', 'development')
         use_llm = REAL_DATA_AVAILABLE and flask_env == 'production'
         
-        print(f"🤖 Running multi-agent analysis for {symbol} (LLM: {use_llm})")
+        print(f"🤖 Running multi-agent analysis for {symbol} (ENV: {flask_env}, LLM: {use_llm})")
         
         agents = {
             '基本面分析师': analyze_fundamentals(symbol, stock_data, use_llm),
@@ -576,7 +581,8 @@ def synthesize_agent_decisions(symbol, agents_analysis, stock_data, news_data, t
 
 def generate_thinking_process(symbol, mode, agents_analysis):
     """生成真实的思考过程 - 反映实际API调用"""
-    flask_env = getattr(config, 'flask_env', os.getenv('FLASK_ENV', 'development'))
+    # 直接检查环境变量，不依赖config对象
+    flask_env = os.getenv('FLASK_ENV', 'development')
     use_real_data = REAL_DATA_AVAILABLE and flask_env == 'production'
     
     thinking_steps = [
@@ -776,18 +782,22 @@ def feature_status():
 @app.route('/debug')
 def debug_status():
     """调试状态接口"""
-    flask_env = getattr(config, 'flask_env', os.getenv('FLASK_ENV', 'development'))
+    # 直接从环境变量获取，确保准确性
+    flask_env = os.getenv('FLASK_ENV', 'development')
+    config_env = getattr(config, 'flask_env', 'unknown') if config else 'no_config'
     
     return jsonify({
         'timestamp': datetime.now().isoformat(),
         'environment': {
-            'flask_env': flask_env,
+            'flask_env_from_os': flask_env,
+            'flask_env_from_config': config_env,
             'python_version': sys.version,
             'working_directory': os.getcwd()
         },
         'real_data_integration': {
             'available': REAL_DATA_AVAILABLE,
-            'should_use_real_data': REAL_DATA_AVAILABLE and flask_env == 'production'
+            'should_use_real_data': REAL_DATA_AVAILABLE and flask_env == 'production',
+            'env_check_result': f"OS={flask_env}, CONFIG={config_env}"
         },
         'environment_variables': {
             'FLASK_ENV': os.getenv('FLASK_ENV', 'NOT_SET'),
@@ -806,8 +816,14 @@ def debug_status():
             'real_data_ready': REAL_DATA_AVAILABLE and flask_env == 'production',
             'reason': (
                 'Real data integration ready' if REAL_DATA_AVAILABLE and flask_env == 'production' 
-                else f'REAL_DATA_AVAILABLE={REAL_DATA_AVAILABLE}, flask_env={flask_env}'
-            )
+                else f'REAL_DATA_AVAILABLE={REAL_DATA_AVAILABLE}, flask_env_os={flask_env}, flask_env_config={config_env}'
+            ),
+            'blocking_factors': [
+                f"REAL_DATA_AVAILABLE: {REAL_DATA_AVAILABLE}",
+                f"FLASK_ENV from OS: {flask_env}",
+                f"FLASK_ENV from CONFIG: {config_env}",
+                f"Environment check result: {flask_env == 'production'}"
+            ]
         }
     })
 
