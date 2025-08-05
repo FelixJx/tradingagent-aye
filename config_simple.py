@@ -34,7 +34,10 @@ class SimpleConfig:
     
     @property
     def flask_port(self):
-        return int(os.getenv('PORT', 5000))  # Render uses PORT env var
+        try:
+            return int(os.getenv('PORT', 5000))  # Render uses PORT env var
+        except (ValueError, TypeError):
+            return 5000
     
     @property
     def flask_debug(self):
