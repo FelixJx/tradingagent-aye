@@ -10,6 +10,15 @@ import threading
 # 添加项目路径
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
+# 导入真实数据集成模块
+try:
+    from real_data_integration import get_real_stock_data, get_real_news_analysis, get_real_llm_analysis
+    REAL_DATA_AVAILABLE = True
+    print("✅ Real data integration loaded successfully")
+except ImportError as e:
+    REAL_DATA_AVAILABLE = False
+    print(f"⚠️ Real data integration not available: {e}")
+
 # 导入配置管理，优先使用完整配置
 config = None
 try:
@@ -138,10 +147,17 @@ def check_advanced_features():
 AVAILABLE_FEATURES = check_advanced_features()
 
 def get_stock_data(symbol):
-    """获取股票数据 (模拟Tushare数据)"""
+    """获取股票数据 - 优先使用真实API数据"""
     try:
-        # 这里模拟从Tushare获取数据
-        # 实际部署时会连接真实的Tushare API
+        # 在生产环境中使用真实数据API
+        flask_env = getattr(config, 'flask_env', os.getenv('FLASK_ENV', 'development'))
+        
+        if REAL_DATA_AVAILABLE and flask_env == 'production':
+            print(f"🔄 Fetching real stock data for {symbol}")
+            return get_real_stock_data(symbol)
+        
+        # 开发环境或API不可用时使用模拟数据
+        print(f"⚠️ Using mock data for {symbol} (env: {flask_env}, real_data: {REAL_DATA_AVAILABLE})")
         base_price = 100 + (hash(symbol) % 50)
         
         return {
@@ -155,9 +171,11 @@ def get_stock_data(symbol):
             'turnover': round((hash(symbol + 'turn') % 100) / 10, 2),
             'pe_ratio': round(15 + (hash(symbol + 'pe') % 30), 2),
             'pb_ratio': round(1 + (hash(symbol + 'pb') % 50) / 10, 2),
-            'market_cap': (hash(symbol + 'cap') % 5000) + 1000
+            'market_cap': (hash(symbol + 'cap') % 5000) + 1000,
+            'data_source': 'mock'
         }
     except Exception as e:
+        print(f"❌ Stock data error: {e}")
         return {'error': f'数据获取失败: {str(e)}'}
 
 def get_stock_name(symbol):
@@ -174,9 +192,17 @@ def get_stock_name(symbol):
     return names.get(symbol, f'股票{symbol.split(".")[0]}')
 
 def get_news_analysis(symbol):
-    """获取新闻分析 (模拟Tavily搜索)"""
+    """获取新闻分析 - 优先使用真实API数据"""
     try:
-        # 模拟新闻情感分析
+        # 在生产环境中使用真实新闻搜索API
+        flask_env = getattr(config, 'flask_env', os.getenv('FLASK_ENV', 'development'))
+        
+        if REAL_DATA_AVAILABLE and flask_env == 'production':
+            print(f"🔄 Fetching real news data for {symbol}")
+            return get_real_news_analysis(symbol)
+        
+        # 开发环境或API不可用时使用模拟数据
+        print(f"⚠️ Using mock news data for {symbol} (env: {flask_env}, real_data: {REAL_DATA_AVAILABLE})")
         sentiment_score = round((hash(symbol + 'news') % 200 - 100) / 100, 2)
         news_count = hash(symbol + 'count') % 20 + 5
         
@@ -192,9 +218,11 @@ def get_news_analysis(symbol):
                 f'{get_stock_name(symbol)}发布最新财报，业绩超预期',
                 f'机构调研显示对{get_stock_name(symbol)}前景看好',
                 f'{get_stock_name(symbol)}获得重要合作项目'
-            ][:news_count//3 + 1]
+            ][:news_count//3 + 1],
+            'data_source': 'mock'
         }
     except Exception as e:
+        print(f"❌ News analysis error: {e}")
         return {'error': f'新闻分析失败: {str(e)}'}
 
 def get_technical_indicators(symbol):
@@ -220,38 +248,106 @@ def get_technical_indicators(symbol):
         return {'error': f'技术指标计算失败: {str(e)}'}
 
 def multi_agent_analysis(symbol, stock_data, news_data, technical_data):
-    """多智能体分析"""
+    """多智能体分析 - 增强版LLM驱动分析"""
     try:
+        flask_env = getattr(config, 'flask_env', os.getenv('FLASK_ENV', 'development'))
+        use_llm = REAL_DATA_AVAILABLE and flask_env == 'production'
+        
+        print(f"🤖 Running multi-agent analysis for {symbol} (LLM: {use_llm})")
+        
         agents = {
-            '基本面分析师': analyze_fundamentals(symbol, stock_data),
-            '技术分析师': analyze_technical(symbol, technical_data),
-            '情感分析师': analyze_sentiment(symbol, news_data),
-            '风险控制师': analyze_risk(symbol, stock_data),
-            '量化分析师': analyze_quantitative(symbol, stock_data, technical_data)
+            '基本面分析师': analyze_fundamentals(symbol, stock_data, use_llm),
+            '技术分析师': analyze_technical(symbol, technical_data, use_llm),
+            '情感分析师': analyze_sentiment(symbol, news_data, use_llm),
+            '风险控制师': analyze_risk(symbol, stock_data, use_llm),
+            '量化分析师': analyze_quantitative(symbol, stock_data, technical_data, use_llm)
         }
+        
+        # 如果使用LLM，还需要生成智能体协商结果
+        if use_llm:
+            agents['综合决策师'] = synthesize_agent_decisions(symbol, agents, stock_data, news_data, technical_data)
         
         return agents
     except Exception as e:
+        print(f"❌ Multi-agent analysis error: {e}")
         return {'error': f'多智能体分析失败: {str(e)}'}
 
-def analyze_fundamentals(symbol, data):
-    """基本面分析"""
+def analyze_fundamentals(symbol, data, use_llm=False):
+    """基本面分析 - 支持LLM深度分析"""
     try:
+        if use_llm:
+            # 使用LLM进行深度基本面分析
+            prompt = f"""
+作为专业的基本面分析师，请对股票 {symbol} ({data.get('name', '未知')}) 进行深度基本面分析：
+
+财务数据：
+- 市盈率(PE): {data.get('pe_ratio', '未知')}
+- 市净率(PB): {data.get('pb_ratio', '未知')}
+- 市值: {data.get('market_cap', '未知')}亿元
+- 当前价格: {data.get('current_price', '未知')}元
+- 换手率: {data.get('turnover', '未知')}%
+
+请从以下角度进行分析：
+1. 估值水平评估（PE、PB是否合理）
+2. 行业对比分析
+3. 财务健康度判断
+4. 投资价值评估
+5. 具体买入/持有/卖出建议
+
+请提供专业且简洁的分析结论（200字以内）。
+"""
+            try:
+                analysis = get_real_llm_analysis(prompt, {'stock_data': data})
+                return f"【LLM深度分析】{analysis}"
+            except Exception as e:
+                print(f"LLM fundamental analysis failed: {e}")
+                # 降级到基础分析
+                pass
+        
+        # 基础规则分析（备用或开发环境）
         pe = data.get('pe_ratio', 20)
         pb = data.get('pb_ratio', 2)
         
         if pe < 15 and pb < 1.5:
-            return f'估值偏低，PE={pe}, PB={pb}，具有投资价值'
+            return f'【基础分析】估值偏低，PE={pe}, PB={pb}，具有投资价值。当前价格{data.get("current_price", "未知")}元，建议关注。'
         elif pe > 30 or pb > 3:
-            return f'估值偏高，PE={pe}, PB={pb}，建议谨慎'
+            return f'【基础分析】估值偏高，PE={pe}, PB={pb}，建议谨慎。当前市值{data.get("market_cap", "未知")}亿，需要观望。'
         else:
-            return f'估值合理，PE={pe}, PB={pb}，可适量配置'
-    except:
-        return '基本面数据不足，无法分析'
+            return f'【基础分析】估值合理，PE={pe}, PB={pb}，可适量配置。价格{data.get("current_price", "未知")}元属于合理区间。'
+    except Exception as e:
+        return f'基本面数据分析异常: {str(e)}'
 
-def analyze_technical(symbol, data):
-    """技术分析"""
+def analyze_technical(symbol, data, use_llm=False):
+    """技术分析 - 支持LLM深度分析"""
     try:
+        if use_llm:
+            prompt = f"""
+作为专业技术分析师，请对股票 {symbol} 进行技术面分析：
+
+技术指标：
+- RSI: {data.get('RSI', '未知')}
+- MACD: {data.get('MACD', '未知')}
+- KDJ: K={data.get('KDJ_K', '未知')}, D={data.get('KDJ_D', '未知')}, J={data.get('KDJ_J', '未知')}
+- 均线: MA5={data.get('MA5', '未知')}, MA20={data.get('MA20', '未知')}, MA60={data.get('MA60', '未知')}
+- 布林带: 上轨={data.get('BOLL_UPPER', '未知')}, 中轨={data.get('BOLL_MIDDLE', '未知')}, 下轨={data.get('BOLL_LOWER', '未知')}
+
+请分析：
+1. 超买/超卖状态
+2. 趋势方向判断
+3. 关键支撑/阻力位
+4. 短期交易信号
+5. 具体操作建议
+
+请提供简洁的技术分析结论（150字以内）。
+"""
+            try:
+                analysis = get_real_llm_analysis(prompt, {'technical_data': data})
+                return f"【LLM技术分析】{analysis}"
+            except Exception as e:
+                print(f"LLM technical analysis failed: {e}")
+                pass
+        
+        # 基础技术分析
         rsi = data.get('RSI', 50)
         macd = data.get('MACD', 0)
         
@@ -260,49 +356,143 @@ def analyze_technical(symbol, data):
             signals.append('RSI显示超卖，可能反弹')
         elif rsi > 70:
             signals.append('RSI显示超买，注意风险')
+        else:
+            signals.append(f'RSI={rsi}，处于正常区间')
             
         if macd > 0:
             signals.append('MACD金叉，趋势向好')
         else:
             signals.append('MACD死叉，趋势转弱')
             
-        return '; '.join(signals) if signals else '技术指标中性'
-    except:
-        return '技术分析数据不足'
+        return f"【技术指标】{'; '.join(signals)}" if signals else '技术指标中性'
+    except Exception as e:
+        return f'技术分析异常: {str(e)}'
 
-def analyze_sentiment(symbol, data):
-    """情感分析"""
+def analyze_sentiment(symbol, data, use_llm=False):
+    """情感分析 - 支持LLM深度分析"""
     try:
+        if use_llm:
+            prompt = f"""
+作为市场情感分析师，请分析股票 {symbol} 的市场情感：
+
+新闻数据：
+- 情感得分: {data.get('sentiment_score', '未知')}
+- 情感倾向: {data.get('sentiment_text', '未知')}
+- 新闻数量: {data.get('news_count', '未知')}条
+- 关键新闻: {data.get('key_news', [])}
+
+请分析：
+1. 市场情感对股价的影响
+2. 投资者信心评估
+3. 媒体关注度分析
+4. 短期情感变化趋势
+5. 基于情感的交易建议
+
+请提供简洁的情感分析结论（120字以内）。
+"""
+            try:
+                analysis = get_real_llm_analysis(prompt, {'news_data': data})
+                return f"【LLM情感分析】{analysis}"
+            except Exception as e:
+                print(f"LLM sentiment analysis failed: {e}")
+                pass
+        
+        # 基础情感分析
         score = data.get('sentiment_score', 0)
+        news_count = data.get('news_count', 0)
         if score > 0.3:
-            return f'市场情感积极(得分:{score})，利好股价'
+            return f'【市场情感】积极(得分:{score})，{news_count}条新闻显示利好，市场看多情绪浓厚'
         elif score < -0.3:
-            return f'市场情感消极(得分:{score})，需要关注风险'
+            return f'【市场情感】消极(得分:{score})，{news_count}条新闻显示利空，需要关注风险'
         else:
-            return f'市场情感中性(得分:{score})，观望为主'
-    except:
-        return '情感分析数据不足'
+            return f'【市场情感】中性(得分:{score})，{news_count}条新闻无明显倾向，观望为主'
+    except Exception as e:
+        return f'情感分析异常: {str(e)}'
 
-def analyze_risk(symbol, data):
-    """风险分析"""
+def analyze_risk(symbol, data, use_llm=False):
+    """风险分析 - 支持LLM深度分析"""
     try:
+        if use_llm:
+            prompt = f"""
+作为风险控制师，请对股票 {symbol} 进行风险评估：
+
+风险指标：
+- 换手率: {data.get('turnover', '未知')}%
+- 市值: {data.get('market_cap', '未知')}亿元
+- 当前价格: {data.get('current_price', '未知')}元
+- 成交量: {data.get('volume', '未知')}
+- PE比率: {data.get('pe_ratio', '未知')}
+
+请评估：
+1. 流动性风险等级
+2. 市值规模风险
+3. 估值风险
+4. 市场风险
+5. 具体风险控制建议
+
+请提供专业的风险评估（120字以内）。
+"""
+            try:
+                analysis = get_real_llm_analysis(prompt, {'risk_data': data})
+                return f"【LLM风险评估】{analysis}"
+            except Exception as e:
+                print(f"LLM risk analysis failed: {e}")
+                pass
+        
+        # 基础风险分析
         turnover = data.get('turnover', 5)
         market_cap = data.get('market_cap', 1000)
+        price = data.get('current_price', 0)
         
         risk_level = '中等'
+        risk_factors = []
+        
         if turnover > 10:
             risk_level = '较高'
+            risk_factors.append('高换手率显示投机性强')
         elif turnover < 2:
             risk_level = '较低'
+            risk_factors.append('低换手率流动性不足')
             
-        return f'流动性风险{risk_level}(换手率:{turnover}%)，市值{market_cap}亿'
-    except:
-        return '风险数据分析不足'
+        if market_cap < 100:
+            risk_factors.append('小市值股票波动性大')
+        elif market_cap > 5000:
+            risk_factors.append('大市值股票相对稳定')
+            
+        factors_text = '，'.join(risk_factors) if risk_factors else '风险因素适中'
+        return f'【风险评估】流动性风险{risk_level}(换手率:{turnover}%)，市值{market_cap}亿。{factors_text}'
+    except Exception as e:
+        return f'风险分析异常: {str(e)}'
 
-def analyze_quantitative(symbol, stock_data, technical_data):
-    """量化分析"""
+def analyze_quantitative(symbol, stock_data, technical_data, use_llm=False):
+    """量化分析 - 支持LLM深度分析"""
     try:
-        # 简单的量化评分
+        if use_llm:
+            prompt = f"""
+作为量化分析师，请对股票 {symbol} 进行量化建模分析：
+
+量化数据：
+股票数据: PE={stock_data.get('pe_ratio', '未知')}, PB={stock_data.get('pb_ratio', '未知')}, 市值={stock_data.get('market_cap', '未知')}亿
+技术数据: RSI={technical_data.get('RSI', '未知')}, MACD={technical_data.get('MACD', '未知')}, MA20={technical_data.get('MA20', '未知')}
+价格数据: 当前={stock_data.get('current_price', '未知')}元, 换手率={stock_data.get('turnover', '未知')}%
+
+请进行：
+1. 多因子模型评分
+2. 技术信号强度评估
+3. 风险收益比计算
+4. 量化交易信号
+5. 具体仓位建议
+
+请提供量化分析结论（150字以内）。
+"""
+            try:
+                analysis = get_real_llm_analysis(prompt, {'stock_data': stock_data, 'technical_data': technical_data})
+                return f"【LLM量化分析】{analysis}"
+            except Exception as e:
+                print(f"LLM quantitative analysis failed: {e}")
+                pass
+        
+        # 基础量化评分
         score = 0
         factors = []
         
@@ -310,48 +500,124 @@ def analyze_quantitative(symbol, stock_data, technical_data):
         pe = stock_data.get('pe_ratio', 20)
         if pe < 15:
             score += 1
-            factors.append('估值优势')
+            factors.append('估值优势(低PE)')
         elif pe > 30:
             score -= 1
-            factors.append('估值劣势')
+            factors.append('估值劣势(高PE)')
             
         # 技术因子
         rsi = technical_data.get('RSI', 50)
         if 30 < rsi < 70:
             score += 0.5
-            factors.append('技术中性')
+            factors.append('技术面中性')
+        elif rsi < 30:
+            score += 1
+            factors.append('技术面超卖')
+        elif rsi > 70:
+            score -= 0.5
+            factors.append('技术面超买')
             
-        return f'量化评分:{score}分，主要因子:{"、".join(factors) if factors else "无明显因子"}'
-    except:
-        return '量化分析计算失败'
+        # 流动性因子
+        turnover = stock_data.get('turnover', 5)
+        if 3 < turnover < 15:
+            score += 0.3
+            factors.append('流动性适中')
+            
+        return f'【量化模型】综合评分:{score:.1f}分，关键因子:{"、".join(factors) if factors else "无明显因子"}'
+    except Exception as e:
+        return f'量化分析异常: {str(e)}'
+
+def synthesize_agent_decisions(symbol, agents_analysis, stock_data, news_data, technical_data):
+    """综合决策师 - 整合所有智能体分析结果"""
+    try:
+        prompt = f"""
+作为首席投资策略师，请综合以下多个专业分析师的观点，对股票 {symbol} ({stock_data.get('name', '未知')}) 做出最终投资决策：
+
+各分析师观点：
+基本面分析师: {agents_analysis.get('基本面分析师', '无')}
+技术分析师: {agents_analysis.get('技术分析师', '无')}
+情感分析师: {agents_analysis.get('情感分析师', '无')}
+风险控制师: {agents_analysis.get('风险控制师', '无')}
+量化分析师: {agents_analysis.get('量化分析师', '无')}
+
+综合数据：
+- 当前价格: {stock_data.get('current_price', '未知')}元
+- PE/PB: {stock_data.get('pe_ratio', '未知')}/{stock_data.get('pb_ratio', '未知')}
+- RSI/MACD: {technical_data.get('RSI', '未知')}/{technical_data.get('MACD', '未知')}
+- 市场情感: {news_data.get('sentiment_text', '未知')}
+
+请分析各分析师观点的一致性和分歧点，给出：
+1. 综合投资评级（买入/持有/卖出）
+2. 置信度（1-100%）
+3. 主要支撑理由
+4. 核心风险点
+5. 具体执行建议
+
+请提供最终决策（200字以内）。
+"""
+        
+        try:
+            analysis = get_real_llm_analysis(prompt, {
+                'agents': agents_analysis,
+                'stock_data': stock_data,
+                'news_data': news_data,
+                'technical_data': technical_data
+            })
+            return f"【综合决策】{analysis}"
+        except Exception as e:
+            print(f"LLM synthesis failed: {e}")
+            return "【综合决策】系统正在整合多维度分析结果，各分析师观点已收集完毕，请查看详细分析报告。"
+    except Exception as e:
+        return f'综合决策分析异常: {str(e)}'
 
 def generate_thinking_process(symbol, mode, agents_analysis):
-    """生成思考过程"""
+    """生成真实的思考过程 - 反映实际API调用"""
+    flask_env = getattr(config, 'flask_env', os.getenv('FLASK_ENV', 'development'))
+    use_real_data = REAL_DATA_AVAILABLE and flask_env == 'production'
+    
     thinking_steps = [
         f'🔍 开始分析股票 {symbol} - {get_stock_name(symbol)}',
         f'📊 选择分析模式: {mode}',
-        '🌐 连接数据源，获取最新市场数据...',
-        '📈 计算技术指标和价格趋势...',
-        '📰 搜索相关新闻和市场情感...',
-        '🤖 启动多智能体协同分析系统...',
+        f'🔧 系统环境: {flask_env} | 真实数据: {"✅" if use_real_data else "❌模拟模式"}',
         '',
-        '💭 智能体思考过程:',
-        '├─ 基本面分析师: 正在评估财务指标和估值水平',
-        '├─ 技术分析师: 正在识别价格模式和技术信号',  
-        '├─ 情感分析师: 正在分析市场情绪和新闻影响',
-        '├─ 风险控制师: 正在评估投资风险和流动性',
-        '└─ 量化分析师: 正在计算综合评分和因子权重',
+        '🌐 数据获取阶段:',
+        f'├─ {"🔄 Tushare/AKShare实时数据获取..." if use_real_data else "⚠️ 使用模拟股票数据"}',
+        f'├─ {"🔄 Tavily新闻搜索API调用..." if use_real_data else "⚠️ 使用模拟新闻数据"}',
+        f'└─ {"✅ 技术指标实时计算完成" if use_real_data else "✅ 技术指标模拟计算完成"}',
         '',
-        '🧠 综合决策逻辑:',
-        f'• 基本面权重: 30% - {agents_analysis.get("基本面分析师", "N/A")}',
-        f'• 技术面权重: 25% - {agents_analysis.get("技术分析师", "N/A")}', 
-        f'• 情感面权重: 20% - {agents_analysis.get("情感分析师", "N/A")}',
-        f'• 风险面权重: 15% - {agents_analysis.get("风险控制师", "N/A")}',
-        f'• 量化面权重: 10% - {agents_analysis.get("量化分析师", "N/A")}',
+        '🤖 多智能体分析阶段:',
+        f'├─ 基本面分析师: {"🧠 DashScope LLM深度分析中..." if use_real_data else "📊 规则分析完成"}',
+        f'├─ 技术分析师: {"🧠 LLM技术面深度解读中..." if use_real_data else "📈 指标规则分析完成"}',  
+        f'├─ 情感分析师: {"🧠 LLM情感语义分析中..." if use_real_data else "📰 情感规则分析完成"}',
+        f'├─ 风险控制师: {"🧠 LLM风险评估分析中..." if use_real_data else "⚠️ 风险规则分析完成"}',
+        f'└─ 量化分析师: {"🧠 LLM量化建模分析中..." if use_real_data else "📊 量化规则分析完成"}',
         '',
-        '⚖️ 决策融合中...',
-        '✅ 生成最终投资建议'
+        '🧠 智能体协商阶段:',
+        '├─ 收集各分析师的专业观点',
+        '├─ 识别分析结果的一致性和分歧点',
+        '├─ 评估各观点的权重和可信度',
+        f'└─ {"🤖 综合决策师 LLM整合分析..." if use_real_data else "📋 基础规则整合完成"}',
+        '',
+        '📊 分析结果整合:',
+        f'• 基本面: {agents_analysis.get("基本面分析师", "分析中...")}',
+        f'• 技术面: {agents_analysis.get("技术分析师", "分析中...")}', 
+        f'• 情感面: {agents_analysis.get("情感分析师", "分析中...")}',
+        f'• 风险面: {agents_analysis.get("风险控制师", "分析中...")}',
+        f'• 量化面: {agents_analysis.get("量化分析师", "分析中...")}',
     ]
+    
+    # 如果有综合决策师结果，添加到思考过程中
+    if '综合决策师' in agents_analysis:
+        thinking_steps.extend([
+            '',
+            '⚖️ 最终决策阶段:',
+            f'└─ {agents_analysis.get("综合决策师", "决策生成中...")}'
+        ])
+    
+    thinking_steps.extend([
+        '',
+        f'✅ {"多维度智能分析完成" if use_real_data else "基础分析完成"}'
+    ])
     
     return '\n'.join(thinking_steps)
 
