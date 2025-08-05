@@ -6,13 +6,26 @@ Real Data Integration for Trading Agent
 """
 
 import os
-import asyncio
-import aiohttp
 from typing import Dict, Any, Optional, List
 from datetime import datetime, timedelta
 import logging
 
 logger = logging.getLogger(__name__)
+
+# 可选导入 - 如果缺失不会阻止模块加载
+try:
+    import asyncio
+    HAS_ASYNCIO = True
+except ImportError:
+    HAS_ASYNCIO = False
+    logger.warning("asyncio not available")
+
+try:
+    import aiohttp
+    HAS_AIOHTTP = True
+except ImportError:
+    HAS_AIOHTTP = False
+    logger.warning("aiohttp not available")
 
 class RealDataIntegrator:
     """真实数据集成器"""
@@ -44,7 +57,11 @@ class RealDataIntegrator:
     def _get_tushare_data(self, symbol: str) -> Dict[str, Any]:
         """使用Tushare获取数据"""
         try:
-            import tushare as ts
+            try:
+                import tushare as ts
+            except ImportError:
+                raise ValueError("Tushare package not available")
+                
             ts.set_token(self.tushare_token)
             pro = ts.pro_api()
             
@@ -91,7 +108,10 @@ class RealDataIntegrator:
     def _get_akshare_fallback(self, symbol: str) -> Dict[str, Any]:
         """使用AKShare作为备用数据源"""
         try:
-            import akshare as ak
+            try:
+                import akshare as ak
+            except ImportError:
+                raise ValueError("AKShare package not available")
             
             # 转换为akshare格式
             ak_symbol = symbol.replace('.SH', '').replace('.SZ', '')
@@ -142,7 +162,10 @@ class RealDataIntegrator:
     def _search_with_tavily(self, symbol: str) -> Dict[str, Any]:
         """使用Tavily搜索新闻"""
         try:
-            from tavily import TavilyClient
+            try:
+                from tavily import TavilyClient
+            except ImportError:
+                raise ValueError("Tavily package not available")
             
             client = TavilyClient(api_key=self.tavily_api_key)
             
@@ -194,8 +217,11 @@ class RealDataIntegrator:
     def _call_dashscope_api(self, prompt: str, context: Dict = None) -> str:
         """调用DashScope API"""
         try:
-            import dashscope
-            from dashscope import Generation
+            try:
+                import dashscope
+                from dashscope import Generation
+            except ImportError:
+                raise ValueError("DashScope package not available")
             
             dashscope.api_key = self.dashscope_api_key
             

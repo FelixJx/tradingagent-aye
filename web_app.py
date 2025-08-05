@@ -17,7 +17,11 @@ try:
     print("✅ Real data integration loaded successfully")
 except ImportError as e:
     REAL_DATA_AVAILABLE = False
-    print(f"⚠️ Real data integration not available: {e}")
+    print(f"❌ Real data integration FAILED to load: {e}")
+    print(f"❌ This means the system will use mock data even in production!")
+except Exception as e:
+    REAL_DATA_AVAILABLE = False
+    print(f"❌ Unexpected error loading real data integration: {type(e).__name__}: {e}")
 
 # 导入配置管理，优先使用完整配置
 config = None
@@ -764,6 +768,44 @@ def feature_status():
             'Basic analysis only'
         ),
         'missing_features': [f for f in advanced_features if not AVAILABLE_FEATURES.get(f, False)]
+    })
+
+@app.route('/debug')
+def debug_status():
+    """调试状态接口"""
+    flask_env = getattr(config, 'flask_env', os.getenv('FLASK_ENV', 'development'))
+    
+    return jsonify({
+        'timestamp': datetime.now().isoformat(),
+        'environment': {
+            'flask_env': flask_env,
+            'python_version': sys.version,
+            'working_directory': os.getcwd()
+        },
+        'real_data_integration': {
+            'available': REAL_DATA_AVAILABLE,
+            'should_use_real_data': REAL_DATA_AVAILABLE and flask_env == 'production'
+        },
+        'environment_variables': {
+            'FLASK_ENV': os.getenv('FLASK_ENV', 'NOT_SET'),
+            'TUSHARE_TOKEN': 'SET' if os.getenv('TUSHARE_TOKEN') else 'NOT_SET',
+            'DASHSCOPE_API_KEY': 'SET' if os.getenv('DASHSCOPE_API_KEY') else 'NOT_SET',
+            'TAVILY_API_KEY': 'SET' if os.getenv('TAVILY_API_KEY') else 'NOT_SET'
+        },
+        'config_object': {
+            'type': str(type(config)),
+            'flask_env': getattr(config, 'flask_env', 'NOT_AVAILABLE'),
+            'tushare_token': 'SET' if getattr(config, 'tushare_token', None) else 'NOT_SET',
+            'dashscope_api_key': 'SET' if getattr(config, 'dashscope_api_key', None) else 'NOT_SET'
+        },
+        'feature_detection': AVAILABLE_FEATURES,
+        'system_diagnosis': {
+            'real_data_ready': REAL_DATA_AVAILABLE and flask_env == 'production',
+            'reason': (
+                'Real data integration ready' if REAL_DATA_AVAILABLE and flask_env == 'production' 
+                else f'REAL_DATA_AVAILABLE={REAL_DATA_AVAILABLE}, flask_env={flask_env}'
+            )
+        }
     })
 
 @app.route('/test-real-data/<symbol>')
