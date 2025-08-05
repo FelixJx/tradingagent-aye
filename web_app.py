@@ -9,17 +9,19 @@ import time
 # 添加项目路径
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# 尝试导入配置管理，如果失败则使用简化配置
+# 导入配置管理，优先使用完整配置
 try:
     from config import get_config
     config = get_config()
-except ImportError:
+    print("✅ Using full configuration with LangChain support")
+except ImportError as e:
+    print(f"⚠️ Full config import failed: {e}")
     try:
         from config_simple import get_simple_config
         config = get_simple_config()
-        print("Using simplified configuration")
+        print("📦 Using simplified configuration")
     except ImportError:
-        print("Warning: no config module available, using environment variables directly")
+        print("❌ No config module available, using environment variables directly")
         config = None
 
 app = Flask(__name__)
@@ -27,6 +29,49 @@ app = Flask(__name__)
 # 全局变量
 trading_agent = None
 analysis_cache = {}
+
+# 检测高级功能可用性
+def check_advanced_features():
+    """检测高级功能是否可用"""
+    features = {
+        'langchain': False,
+        'akshare': False,
+        'pandas': False,
+        'enhanced_agent': False
+    }
+    
+    try:
+        import langchain
+        features['langchain'] = True
+        print("✅ LangChain available")
+    except ImportError:
+        print("❌ LangChain not available")
+    
+    try:
+        import akshare
+        features['akshare'] = True
+        print("✅ AKShare available")
+    except ImportError:
+        print("❌ AKShare not available")
+    
+    try:
+        import pandas
+        features['pandas'] = True
+        print("✅ Pandas available")
+    except ImportError:
+        print("❌ Pandas not available")
+    
+    try:
+        from enhanced_agent_architecture import EnhancedTradingSystem
+        features['enhanced_agent'] = True
+        print("✅ Enhanced Agent Architecture available")
+    except ImportError as e:
+        print(f"❌ Enhanced Agent Architecture not available: {e}")
+    
+    return features
+
+# 初始化时检查功能
+AVAILABLE_FEATURES = check_advanced_features()
 
 def get_stock_data(symbol):
     """获取股票数据 (模拟Tushare数据)"""
@@ -358,6 +403,23 @@ def health():
             'ai_models': 'available',
             'cache': 'active'
         }
+    })
+
+@app.route('/features')
+def feature_status():
+    """功能状态检查接口"""
+    return jsonify({
+        'status': 'ok',
+        'timestamp': datetime.now().isoformat(),
+        'available_features': AVAILABLE_FEATURES,
+        'capabilities': {
+            'basic_analysis': True,
+            'real_time_data': AVAILABLE_FEATURES['akshare'],
+            'ai_reasoning': AVAILABLE_FEATURES['langchain'],
+            'enhanced_agents': AVAILABLE_FEATURES['enhanced_agent'],
+            'technical_analysis': AVAILABLE_FEATURES['pandas']
+        },
+        'recommendation': 'Full AI analysis' if all(AVAILABLE_FEATURES.values()) else 'Basic analysis only'
     })
 
 @app.route('/analyze', methods=['POST'])

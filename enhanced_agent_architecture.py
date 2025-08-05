@@ -12,14 +12,44 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 from enum import Enum
-import numpy as np
-from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
-from langchain_core.prompts import ChatPromptTemplate
-import akshare as ak
-import pandas as pd
+
+# Try to import optional dependencies with fallbacks
+try:
+    import numpy as np
+    HAS_NUMPY = True
+except ImportError:
+    print("⚠️ NumPy not available, using fallback functions")
+    HAS_NUMPY = False
+
+try:
+    from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
+    from langchain_core.prompts import ChatPromptTemplate
+    HAS_LANGCHAIN = True
+    print("✅ LangChain successfully imported")
+except ImportError as e:
+    print(f"⚠️ LangChain not available: {e}")
+    HAS_LANGCHAIN = False
+
+try:
+    import akshare as ak
+    HAS_AKSHARE = True
+    print("✅ AKShare successfully imported")
+except ImportError as e:
+    print(f"⚠️ AKShare not available: {e}")
+    HAS_AKSHARE = False
+
+try:
+    import pandas as pd
+    HAS_PANDAS = True
+except ImportError:
+    print("⚠️ Pandas not available, using limited functionality")
+    HAS_PANDAS = False
 
 # 导入配置
-from config import get_config
+try:
+    from config import get_config
+except ImportError:
+    from config_simple import get_simple_config as get_config
 
 class MarketRegime(Enum):
     BULL_MARKET = "bull_market"

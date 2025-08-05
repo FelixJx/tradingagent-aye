@@ -6,12 +6,16 @@ Secure handling of environment variables and API keys
 """
 
 import os
-from dotenv import load_dotenv
 from typing import Optional, Dict, Any
 import logging
 
-# Load environment variables from .env file
-load_dotenv()
+# Try to load dotenv, but don't fail if not available
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+    print("✅ Environment variables loaded from .env file")
+except ImportError:
+    print("⚠️ python-dotenv not available, using system environment variables only")
 
 class Config:
     """Configuration management class for Trading Agent"""
