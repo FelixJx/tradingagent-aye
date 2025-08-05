@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Trading Agent 深度测试面板</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .system-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .status-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .status-item h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 8px;
+        }
+        
+        .status-online { background: #27ae60; }
+        .status-offline { background: #e74c3c; }
+        .status-warning { background: #f39c12; }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+        }
+        
+        .test-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .test-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        }
+        
+        .test-card h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            font-size: 1.3em;
+        }
+        
+        .test-card .icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-right: 12px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: rgba(255, 255, 255, 1);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn.danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+        
+        .btn.success {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        }
+        
+        .btn.warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        }
+        
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .result-area {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(248, 249, 250, 0.8);
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            min-height: 120px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            font-weight: 500;
+            margin: 15px 0;
+        }
+        
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #667eea;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .analysis-depth {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .depth-option {
+            padding: 10px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .depth-option.active {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+        
+        .feature-tag {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            margin: 2px;
+        }
+        
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .metric-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+        }
+        
+        .metric-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .metric-label {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        .footer {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            text-align: center;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2.2em;
+            }
+            
+            .system-status {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .analysis-depth {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Enhanced Trading Agent</h1>
+            <p>深度多智能体股票分析系统 - 实时数据 + AI协同决策</p>
+            
+            <!-- 系统状态监控 -->
+            <div class="system-status">
+                <div class="status-item">
+                    <h4>Tushare API <span class="status-indicator status-offline" id="tushare-status"></span></h4>
+                    <small>实时数据源</small>
+                </div>
+                <div class="status-item">
+                    <h4>DashScope <span class="status-indicator status-offline" id="dashscope-status"></span></h4>
+                    <small>千问大模型</small>
+                </div>
+                <div class="status-item">
+                    <h4>多智能体系统 <span class="status-indicator status-online" id="agent-status"></span></h4>
+                    <small>协同分析</small>
+                </div>
+                <div class="status-item">
+                    <h4>Web服务 <span class="status-indicator status-online" id="web-status"></span></h4>
+                    <small>在线运行</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard">
+            <!-- 深度股票分析 -->
+            <div class="test-card">
+                <h3>
+                    <span class="icon" style="background: linear-gradient(135deg, #667eea, #764ba2);"></span>
+                    🧠 深度多智能体分析
+                </h3>
+                
+                <div class="feature-tag">实时数据</div>
+                <div class="feature-tag">多轮辩论</div>
+                <div class="feature-tag">自我反思</div>
+                <div class="feature-tag">风险评估</div>
+                
+                <div class="form-group">
+                    <label for="deep-stock-code">股票代码</label>
+                    <input type="text" id="deep-stock-code" placeholder="如：603516, 000001, 600036" value="603516">
+                </div>
+                
+                <div class="form-group">
+                    <label>分析深度</label>
+                    <div class="analysis-depth">
+                        <div class="depth-option" data-depth="quick">快速分析</div>
+                        <div class="depth-option active" data-depth="standard">标准分析</div>
+                        <div class="depth-option" data-depth="deep">深度分析</div>
+                        <div class="depth-option" data-depth="comprehensive">全面分析</div>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="runDeepAnalysis()">启动深度分析</button>
+                
+                <div class="progress-bar" id="deep-progress" style="display: none;">
+                    <div class="progress-fill" id="deep-progress-fill"></div>
+                </div>
+                
+                <div class="loading" id="deep-loading">AI智能体正在协同分析中...</div>
+                <div class="result-area" id="deep-result">点击启动深度分析</div>
+            </div>
+            
+            <!-- 实时数据监控 -->
+            <div class="test-card">
+                <h3>
+                    <span class="icon" style="background: linear-gradient(135deg, #e74c3c, #c0392b);"></span>
+                    📊 实时数据监控
+                </h3>
+                
+                <div class="feature-tag">Tushare</div>
+                <div class="feature-tag">AKShare</div>
+                <div class="feature-tag">技术指标</div>
+                
+                <div class="form-group">
+                    <label for="monitor-stock">监控股票</label>
+                    <input type="text" id="monitor-stock" placeholder="股票代码" value="603516">
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn success" onclick="startRealTimeMonitor()">开始监控</button>
+                    <button class="btn danger" onclick="stopRealTimeMonitor()">停止监控</button>
+                </div>
+                
+                <div class="metric-grid" id="real-time-metrics">
+                    <div class="metric-item">
+                        <div class="metric-value" id="current-price">--</div>
+                        <div class="metric-label">当前价格</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value" id="price-change">--</div>
+                        <div class="metric-label">涨跌幅</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value" id="volume">--</div>
+                        <div class="metric-label">成交量</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value" id="turnover">--</div>
+                        <div class="metric-label">换手率</div>
+                    </div>
+                </div>
+                
+                <div class="result-area" id="monitor-result">实时数据将在此显示</div>
+            </div>
+            
+            <!-- 多智能体辩论 -->
+            <div class="test-card">
+                <h3>
+                    <span class="icon" style="background: linear-gradient(135deg, #f39c12, #e67e22);"></span>
+                    🗣️ 多智能体辩论系统
+                </h3>
+                
+                <div class="feature-tag">多头研究员</div>
+                <div class="feature-tag">空头研究员</div>
+                <div class="feature-tag">中性分析师</div>
+                <div class="feature-tag">风险管理师</div>
+                
+                <div class="form-group">
+                    <label for="debate-stock">辩论标的</label>
+                    <input type="text" id="debate-stock" placeholder="股票代码" value="603516">
+                </div>
+                
+                <div class="form-group">
+                    <label for="debate-rounds">辩论轮数</label>
+                    <select id="debate-rounds">
+                        <option value="1">1轮 (快速)</option>
+                        <option value="2" selected>2轮 (标准)</option>
+                        <option value="3">3轮 (深度)</option>
+                        <option value="5">5轮 (全面)</option>
+                    </select>
+                </div>
+                
+                <button class="btn warning" onclick="startAgentDebate()">开始智能体辩论</button>
+                
+                <div class="loading" id="debate-loading">智能体辩论进行中...</div>
+                <div class="result-area" id="debate-result">点击开始智能体辩论</div>
+            </div>
+            
+            <!-- 风险管理系统 -->
+            <div class="test-card">
+                <h3>
+                    <span class="icon" style="background: linear-gradient(135deg, #27ae60, #229954);"></span>
+                    ⚠️ 智能风险管理
+                </h3>
+                
+                <div class="feature-tag">VaR计算</div>
+                <div class="feature-tag">压力测试</div>
+                <div class="feature-tag">相关性分析</div>
+                
+                <div class="form-group">
+                    <label for="risk-portfolio">投资组合</label>
+                    <textarea id="risk-portfolio" placeholder="输入股票代码，用逗号分隔，如：603516,000001,600036" rows="3">603516,000001,600036</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="risk-confidence">置信水平</label>
+                    <select id="risk-confidence">
+                        <option value="0.95" selected>95%</option>
+                        <option value="0.99">99%</option>
+                        <option value="0.999">99.9%</option>
+                    </select>
+                </div>
+                
+                <button class="btn success" onclick="runRiskAnalysis()">运行风险分析</button>
+                
+                <div class="loading" id="risk-loading">正在计算风险指标...</div>
+                <div class="result-area" id="risk-result">点击运行风险分析</div>
+            </div>
+            
+            <!-- 策略回测系统 -->
+            <div class="test-card">
+                <h3>
+                    <span class="icon" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);"></span>
+                    📈 智能策略回测
+                </h3>
+                
+                <div class="feature-tag">量化策略</div>
+                <div class="feature-tag">历史回测</div>
+                <div class="feature-tag">性能评估</div>
+                
+                <div class="form-group">
+                    <label for="backtest-strategy">策略类型</label>
+                    <select id="backtest-strategy">
+                        <option value="multi_agent_consensus">多智能体共识策略</option>
+                        <option value="deep_reasoning">深度推理策略</option>
+                        <option value="risk_adjusted">风险调整策略</option>
+                        <option value="momentum_reversal">动量反转策略</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="backtest-period">回测周期</label>
+                    <select id="backtest-period">
+                        <option value="3m">3个月</option>
+                        <option value="6m" selected>6个月</option>
+                        <option value="1y">1年</option>
+                        <option value="2y">2年</option>
+                    </select>
+                </div>
+                
+                <button class="btn" onclick="runAdvancedBacktest()">运行高级回测</button>
+                
+                <div class="loading" id="backtest-loading">正在运行策略回测...</div>
+                <div class="result-area" id="backtest-result">点击运行高级回测</div>
+            </div>
+            
+            <!-- 系统诊断工具 -->
+            <div class="test-card">
+                <h3>
+                    <span class="icon" style="background: linear-gradient(135deg, #34495e, #2c3e50);"></span>
+                    🔧 系统诊断与优化
+                </h3>
+                
+                <div class="btn-group">
+                    <button class="btn success" onclick="systemHealthCheck()">系统健康检查</button>
+                    <button class="btn warning" onclick="performanceTest()">性能压力测试</button>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn" onclick="apiConnectionTest()">API连接测试</button>
+                    <button class="btn danger" onclick="clearSystemCache()">清理系统缓存</button>
+                </div>
+                
+                <div class="loading" id="system-loading">正在进行系统诊断...</div>
+                <div class="result-area" id="system-result">点击执行系统诊断</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; 2024 Enhanced Trading Agent | 深度多智能体股票分析系统</p>
+            <p>集成实时数据、深度推理、多智能体协作和智能风险管理</p>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let currentAnalysisDepth = 'standard';
+        let realTimeMonitorInterval = null;
+        let systemMetrics = {
+            analysisCount: 0,
+            successRate: 0,
+            avgResponseTime: 0,
+            activeConnections: 0
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSystem();
+            setupEventListeners();
+        });
+
+        function initializeSystem() {
+            console.log('🚀 Enhanced Trading Agent System Initializing...');
+            
+            // 模拟API状态检查
+            setTimeout(() => {
+                checkApiStatus();
+            }, 1000);
+            
+            // 更新系统指标
+            updateSystemMetrics();
+            setInterval(updateSystemMetrics, 5000);
+        }
+
+        function setupEventListeners() {
+            // 分析深度选择
+            document.querySelectorAll('.depth-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.depth-option').forEach(o => o.classList.remove('active'));
+                    this.classList.add('active');
+                    currentAnalysisDepth = this.dataset.depth;
+                });
+            });
+        }
+
+        // API状态检查
+        async function checkApiStatus() {
+            const apis = ['tushare', 'dashscope', 'agent', 'web'];
+            
+            for (const api of apis) {
+                const indicator = document.getElementById(`${api}-status`);
+                const isOnline = Math.random() > 0.3; // 模拟连接状态
+                
+                if (indicator) {
+                    indicator.className = `status-indicator ${isOnline ? 'status-online' : 'status-offline'}`;
+                }
+            }
+        }
+
+        // 深度分析
+        async function runDeepAnalysis() {
+            const stockCode = document.getElementById('deep-stock-code').value;
+            if (!stockCode) {
+                alert('请输入股票代码');
+                return;
+            }
+
+            showLoading('deep-loading', 'deep-result');
+            showProgress('deep-progress', 'deep-progress-fill');
+
+            try {
+                // 模拟深度分析过程
+                const stages = [
+                    { name: '收集实时数据', progress: 20 },
+                    { name: '技术指标计算', progress: 40 },
+                    { name: '多智能体协商', progress: 60 },
+                    { name: '风险评估分析', progress: 80 },
+                    { name: '生成最终报告', progress: 100 }
+                ];
+
+                for (const stage of stages) {
+                    updateProgress('deep-progress-fill', stage.progress);
+                    document.getElementById('deep-loading').textContent = `${stage.name}...`;
+                    await sleep(1000);
+                }
+
+                const result = await mockDeepAnalysis(stockCode, currentAnalysisDepth);
+                showResult('deep-result', result);
+                systemMetrics.analysisCount++;
+
+            } catch (error) {
+                showResult('deep-result', { error: error.message });
+            } finally {
+                hideLoading('deep-loading');
+                hideProgress('deep-progress');
+            }
+        }
+
+        // 实时监控
+        function startRealTimeMonitor() {
+            const stockCode = document.getElementById('monitor-stock').value;
+            if (!stockCode) {
+                alert('请输入股票代码');
+                return;
+            }
+
+            if (realTimeMonitorInterval) {
+                clearInterval(realTimeMonitorInterval);
+            }
+
+            realTimeMonitorInterval = setInterval(() => {
+                updateRealTimeData(stockCode);
+            }, 2000);
+
+            document.getElementById('monitor-result').textContent = `正在监控 ${stockCode} 的实时数据...`;
+            updateRealTimeData(stockCode);
+        }
+
+        function stopRealTimeMonitor() {
+            if (realTimeMonitorInterval) {
+                clearInterval(realTimeMonitorInterval);
+                realTimeMonitorInterval = null;
+            }
+            document.getElementById('monitor-result').textContent = '实时监控已停止';
+        }
+
+        function updateRealTimeData(stockCode) {
+            // 模拟实时数据
+            const mockData = {
+                price: (Math.random() * 100 + 50).toFixed(2),
+                change: ((Math.random() - 0.5) * 10).toFixed(2),
+                volume: (Math.random() * 1000000).toFixed(0),
+                turnover: (Math.random() * 10).toFixed(2)
+            };
+
+            document.getElementById('current-price').textContent = mockData.price;
+            document.getElementById('price-change').textContent = mockData.change + '%';
+            document.getElementById('volume').textContent = mockData.volume;
+            document.getElementById('turnover').textContent = mockData.turnover + '%';
+
+            // 更新结果区域
+            const timestamp = new Date().toLocaleTimeString();
+            const resultText = `[${timestamp}] ${stockCode}: ¥${mockData.price} (${mockData.change}%)\n`;
+            document.getElementById('monitor-result').textContent += resultText;
+        }
+
+        // 智能体辩论
+        async function startAgentDebate() {
+            const stockCode = document.getElementById('debate-stock').value;
+            const rounds = document.getElementById('debate-rounds').value;
+
+            if (!stockCode) {
+                alert('请输入股票代码');
+                return;
+            }
+
+            showLoading('debate-loading', 'debate-result');
+
+            try {
+                const result = await mockAgentDebate(stockCode, rounds);
+                showResult('debate-result', result);
+            } catch (error) {
+                showResult('debate-result', { error: error.message });
+            } finally {
+                hideLoading('debate-loading');
+            }
+        }
+
+        // 风险分析
+        async function runRiskAnalysis() {
+            const portfolio = document.getElementById('risk-portfolio').value;
+            const confidence = document.getElementById('risk-confidence').value;
+
+            if (!portfolio) {
+                alert('请输入投资组合');
+                return;
+            }
+
+            showLoading('risk-loading', 'risk-result');
+
+            try {
+                const result = await mockRiskAnalysis(portfolio, confidence);
+                showResult('risk-result', result);
+            } catch (error) {
+                showResult('risk-result', { error: error.message });
+            } finally {
+                hideLoading('risk-loading');
+            }
+        }
+
+        // 高级回测
+        async function runAdvancedBacktest() {
+            const strategy = document.getElementById('backtest-strategy').value;
+            const period = document.getElementById('backtest-period').value;
+
+            showLoading('backtest-loading', 'backtest-result');
+
+            try {
+                const result = await mockAdvancedBacktest(strategy, period);
+                showResult('backtest-result', result);
+            } catch (error) {
+                showResult('backtest-result', { error: error.message });
+            } finally {
+                hideLoading('backtest-loading');
+            }
+        }
+
+        // 系统诊断
+        async function systemHealthCheck() {
+            showLoading('system-loading', 'system-result');
+
+            try {
+                const result = await mockSystemHealthCheck();
+                showResult('system-result', result);
+            } catch (error) {
+                showResult('system-result', { error: error.message });
+            } finally {
+                hideLoading('system-loading');
+            }
+        }
+
+        async function performanceTest() {
+            showLoading('system-loading', 'system-result');
+
+            try {
+                const result = await mockPerformanceTest();
+                showResult('system-result', result);
+            } catch (error) {
+                showResult('system-result', { error: error.message });
+            } finally {
+                hideLoading('system-loading');
+            }
+        }
+
+        async function apiConnectionTest() {
+            showLoading('system-loading', 'system-result');
+
+            try {
+                const result = await mockApiConnectionTest();
+                showResult('system-result', result);
+                checkApiStatus(); // 更新状态指示器
+            } catch (error) {
+                showResult('system-result', { error: error.message });
+            } finally {
+                hideLoading('system-loading');
+            }
+        }
+
+        async function clearSystemCache() {
+            showLoading('system-loading', 'system-result');
+
+            try {
+                const result = await mockClearCache();
+                showResult('system-result', result);
+            } catch (error) {
+                showResult('system-result', { error: error.message });
+            } finally {
+                hideLoading('system-loading');
+            }
+        }
+
+        // 工具函数
+        function showLoading(loadingId, resultId) {
+            document.getElementById(loadingId).style.display = 'block';
+            document.getElementById(resultId).textContent = '';
+        }
+
+        function hideLoading(loadingId) {
+            document.getElementById(loadingId).style.display = 'none';
+        }
+
+        function showProgress(progressId, fillId) {
+            document.getElementById(progressId).style.display = 'block';
+            document.getElementById(fillId).style.width = '0%';
+        }
+
+        function hideProgress(progressId) {
+            document.getElementById(progressId).style.display = 'none';
+        }
+
+        function updateProgress(fillId, percentage) {
+            document.getElementById(fillId).style.width = percentage + '%';
+        }
+
+        function showResult(resultId, result) {
+            document.getElementById(resultId).textContent = JSON.stringify(result, null, 2);
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function updateSystemMetrics() {
+            systemMetrics.activeConnections = Math.floor(Math.random() * 100) + 10;
+            systemMetrics.avgResponseTime = Math.floor(Math.random() * 500) + 100;
+            systemMetrics.successRate = (Math.random() * 0.2 + 0.8).toFixed(3);
+        }
+
+        // 模拟API函数
+        async function mockDeepAnalysis(stockCode, depth) {
+            await sleep(2000);
+            return {
+                stock_code: stockCode,
+                analysis_depth: depth,
+                recommendation: ['强烈买入', '买入', '持有', '卖出'][Math.floor(Math.random() * 4)],
+                confidence: (Math.random() * 0.4 + 0.6).toFixed(2),
+                price_target: {
+                    optimistic: (Math.random() * 50 + 100).toFixed(2),
+                    base_case: (Math.random() * 30 + 80).toFixed(2),
+                    pessimistic: (Math.random() * 20 + 60).toFixed(2)
+                },
+                risk_factors: [
+                    '市场波动风险',
+                    '行业政策风险',
+                    '公司经营风险'
+                ],
+                agent_consensus: {
+                    bull_score: Math.floor(Math.random() * 40 + 60),
+                    bear_score: Math.floor(Math.random() * 40 + 20),
+                    neutral_score: Math.floor(Math.random() * 20 + 40)
+                },
+                timestamp: new Date().toISOString()
+            };
+        }
+
+        async function mockAgentDebate(stockCode, rounds) {
+            await sleep(parseInt(rounds) * 1000);
+            return {
+                stock_code: stockCode,
+                debate_rounds: rounds,
+                participants: ['多头研究员', '空头研究员', '中性分析师', '风险管理师'],
+                final_consensus: {
+                    recommendation: '谨慎买入',
+                    confidence: 0.72,
+                    key_arguments: [
+                        '技术面显示突破信号',
+                        '基本面支撑有限',
+                        '市场情绪偏向乐观',
+                        '风险控制需要加强'
+                    ]
+                },
+                debate_summary: '经过多轮辩论，智能体达成谨慎乐观的共识',
+                timestamp: new Date().toISOString()
+            };
+        }
+
+        async function mockRiskAnalysis(portfolio, confidence) {
+            await sleep(1500);
+            const stocks = portfolio.split(',').map(s => s.trim());
+            return {
+                portfolio: stocks,
+                confidence_level: confidence,
+                var_95: (Math.random() * 0.1 + 0.02).toFixed(4),
+                var_99: (Math.random() * 0.15 + 0.05).toFixed(4),
+                expected_shortfall: (Math.random() * 0.2 + 0.08).toFixed(4),
+                max_drawdown: (Math.random() * 0.25 + 0.1).toFixed(4),
+                sharpe_ratio: (Math.random() * 2 + 0.5).toFixed(2),
+                correlation_matrix: '相关性分析完成',
+                stress_test_results: {
+                    market_crash: '-15.2%',
+                    interest_rate_shock: '-8.7%',
+                    sector_rotation: '-6.3%'
+                },
+                timestamp: new Date().toISOString()
+            };
+        }
+
+        async function mockAdvancedBacktest(strategy, period) {
+            await sleep(2000);
+            return {
+                strategy: strategy,
+                period: period,
+                total_return: ((Math.random() * 0.8 - 0.2) * 100).toFixed(2) + '%',
+                annualized_return: ((Math.random() * 0.4 - 0.1) * 100).toFixed(2) + '%',
+                volatility: (Math.random() * 0.3 + 0.1 * 100).toFixed(2) + '%',
+                sharpe_ratio: (Math.random() * 2 + 0.5).toFixed(2),
+                max_drawdown: (Math.random() * 0.3 * 100).toFixed(2) + '%',
+                win_rate: (Math.random() * 0.4 + 0.4 * 100).toFixed(1) + '%',
+                profit_factor: (Math.random() * 2 + 1).toFixed(2),
+                trades_count: Math.floor(Math.random() * 200 + 50),
+                timestamp: new Date().toISOString()
+            };
+        }
+
+        async function mockSystemHealthCheck() {
+            await sleep(1000);
+            return {
+                system_status: 'healthy',
+                cpu_usage: (Math.random() * 60 + 20).toFixed(1) + '%',
+                memory_usage: (Math.random() * 40 + 30).toFixed(1) + '%',
+                disk_usage: (Math.random() * 30 + 40).toFixed(1) + '%',
+                active_connections: systemMetrics.activeConnections,
+                response_time: systemMetrics.avgResponseTime + 'ms',
+                uptime: Math.floor(Math.random() * 86400) + ' seconds',
+                api_status: {
+                    tushare: Math.random() > 0.2 ? 'online' : 'offline',
+                    dashscope: Math.random() > 0.3 ? 'online' : 'offline',
+                    tavily: Math.random() > 0.4 ? 'online' : 'offline'
+                },
+                timestamp: new Date().toISOString()
+            };
+        }
+
+        async function mockPerformanceTest() {
+            await sleep(1500);
+            return {
+                test_type: 'performance_stress_test',
+                concurrent_requests: 100,
+                avg_response_time: (Math.random() * 200 + 100).toFixed(0) + 'ms',
+                success_rate: (Math.random() * 0.1 + 0.9 * 100).toFixed(1) + '%',
+                throughput: Math.floor(Math.random() * 500 + 200) + ' req/sec',
+                memory_peak: (Math.random() * 200 + 300).toFixed(0) + 'MB',
+                cpu_peak: (Math.random() * 40 + 60).toFixed(1) + '%',
+                recommendations: [
+                    '系统性能良好',
+                    '建议监控内存使用',
+                    '可优化数据库查询'
+                ],
+                timestamp: new Date().toISOString()
+            };
+        }
+
+        async function mockApiConnectionTest() {
+            await sleep(800);
+            const apis = ['tushare', 'dashscope', 'tavily', 'openai'];
+            const results = {};
+            
+            for (const api of apis) {
+                const connected = Math.random() > 0.25;
+                results[api] = {
+                    status: connected ? 'connected' : 'failed',
+                    response_time: connected ? Math.floor(Math.random() * 500 + 100) + 'ms' : 'timeout',
+                    last_test: new Date().toISOString()
+                };
+            }
+            
+            return {
+                test_type: 'api_connection_test',
+                results: results,
+                overall_status: Object.values(results).every(r => r.status === 'connected') ? 'all_online' : 'partial_online',
+                timestamp: new Date().toISOString()
+            };
+        }
+
+        async function mockClearCache() {
+            await sleep(500);
+            return {
+                operation: 'clear_cache',
+                cleared_items: Math.floor(Math.random() * 1000 + 100),
+                freed_space: (Math.random() * 100 + 50).toFixed(1) + 'MB',
+                cache_types: ['analysis_cache', 'data_cache', 'session_cache'],
+                status: 'success',
+                timestamp: new Date().toISOString()
+            };
+        }
+    </script>
+</body>
+</html>

@@ -424,7 +424,7 @@ def main():
     print("🌟 启动Tushare增强因子系统")
     
     # 初始化系统
-    system = TushareEnhancedFactorSystem(os.getenv("TUSHARE_TOKEN"))
+    system = TushareEnhancedFactorSystem('b34d8920b99b43d48df7e792a4708a29f868feeee30d9c84b54bf065')
     
     # 测试股票列表
     test_stocks = ['000001.SZ', '000002.SZ', '000006.SZ', '600036.SH', '600000.SH']

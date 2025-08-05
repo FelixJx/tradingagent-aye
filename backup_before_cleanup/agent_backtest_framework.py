@@ -4,7 +4,6 @@
 基于tushare真实数据的历史回测系统
 """
 
-import os
 import tushare as ts
 import pandas as pd
 import numpy as np
@@ -589,7 +588,7 @@ class AgentBacktestFramework:
 def main():
     """主函数"""
     # 初始化回测框架
-    framework = AgentBacktestFramework(os.getenv("TUSHARE_TOKEN"))
+    framework = AgentBacktestFramework('b34d8920b99b43d48df7e792a4708a29f868feeee30d9c84b54bf065')
     
     # 测试股票列表
     test_stocks = ['000001.SZ', '000002.SZ', '600000.SH', '600036.SH']

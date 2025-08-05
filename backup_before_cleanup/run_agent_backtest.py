@@ -14,7 +14,7 @@ from enhanced_agent_analysis import EnhancedAgentAnalysis
 def load_config():
     """加载配置"""
     config = {
-        'tushare_token': os.getenv("TUSHARE_TOKEN"),
+        'tushare_token': 'b34d8920b99b43d48df7e792a4708a29f868feeee30d9c84b54bf065',
         'test_stocks': [
             '000001.SZ',  # 平安银行
             '000002.SZ',  # 万科A

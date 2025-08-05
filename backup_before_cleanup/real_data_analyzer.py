@@ -12,8 +12,8 @@ from datetime import datetime, timedelta
 import time
 
 # 配置环境变量
-os.environ['TUSHARE_TOKEN'] = os.getenv("TUSHARE_TOKEN")
-os.environ['TAVILY_API_KEY'] = os.getenv("TAVILY_API_KEY")
+os.environ['TUSHARE_TOKEN'] = 'b34d8920b99b43d48df7e792a4708a29f868feeee30d9c84b54bf065'
+os.environ['TAVILY_API_KEY'] = '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'
 
 class RealDataConnector:
     """真实数据连接器"""

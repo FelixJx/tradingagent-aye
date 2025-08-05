@@ -5,7 +5,6 @@
 专门负责消息面和市场情绪分析，识别重大利空利好
 """
 
-import os
 import json
 import urllib.request
 import urllib.parse
@@ -17,7 +16,7 @@ class NewsSentimentAnalyst:
     
     def __init__(self):
         self.analyst_name = "消息面分析师"
-        self.tavily_api_key = os.getenv("TAVILY_API_KEY")
+        self.tavily_api_key = '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'
         
         # 雷区关键词库
         self.thunderbolt_keywords = {

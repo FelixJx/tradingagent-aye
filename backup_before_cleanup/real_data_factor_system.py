@@ -727,7 +727,7 @@ def main():
     """主函数演示"""
     # 初始化系统
     system = RealDataFactorSystem(
-        tushare_token=os.getenv("TUSHARE_TOKEN"),
+        tushare_token='b34d8920b99b43d48df7e792a4708a29f868feeee30d9c84b54bf065',
         data_dir='./factor_data'
     )
     

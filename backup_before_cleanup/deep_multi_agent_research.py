@@ -197,7 +197,7 @@ class MultiAgentResearchSystem:
             return None
         
         # 优先尝试使用DeepSeek (通过OpenAI接口)
-        deepseek_key = os.getenv("OPENAI_API_KEY", os.getenv("DEEPSEEK_API_KEY"))
+        deepseek_key = os.getenv("OPENAI_API_KEY", "sk-831cb74319af43ebbfd7ad5e13fd4dfd")
         if deepseek_key and deepseek_key.startswith("sk-"):
             try:
                 logger.info("尝试使用DeepSeek API...")
@@ -213,7 +213,7 @@ class MultiAgentResearchSystem:
                 logger.warning(f"DeepSeek初始化失败: {e}")
                 
         # 尝试使用阿里云千问
-        dashscope_key = os.getenv("DASHSCOPE_API_KEY", os.getenv("DASHSCOPE_API_KEY"))
+        dashscope_key = os.getenv("DASHSCOPE_API_KEY", "sk-e050041b41674ed7b87644895ebae718")
         if dashscope_key and dashscope_key.startswith("sk-"):
             try:
                 logger.info("尝试使用阿里云千问...")

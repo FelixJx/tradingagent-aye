@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Agent 测试面板</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+        
+        .test-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            border: 1px solid #e9ecef;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .test-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .test-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .test-card .icon {
+            width: 24px;
+            height: 24px;
+            background: #3498db;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn.danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        .btn.success {
+            background: linear-gradient(135deg, #27ae60, #229954);
+        }
+        
+        .result-area {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            min-height: 100px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+        
+        .status-online {
+            background: #27ae60;
+        }
+        
+        .status-offline {
+            background: #e74c3c;
+        }
+        
+        .status-warning {
+            background: #f39c12;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: #3498db;
+            font-style: italic;
+        }
+        
+        .api-status {
+            background: #ecf0f1;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+        
+        .api-status h4 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .api-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #bdc3c7;
+        }
+        
+        .api-item:last-child {
+            border-bottom: none;
+        }
+        
+        .footer {
+            background: #34495e;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Trading Agent 测试面板</h1>
+            <p>股票分析系统功能测试与调试工具</p>
+        </div>
+        
+        <div class="api-status">
+            <h4>📡 API 服务状态</h4>
+            <div class="api-item">
+                <span>Tushare API</span>
+                <span class="status-indicator status-offline" id="tushare-status"></span>
+            </div>
+            <div class="api-item">
+                <span>DashScope API</span>
+                <span class="status-indicator status-offline" id="dashscope-status"></span>
+            </div>
+            <div class="api-item">
+                <span>Tavily API</span>
+                <span class="status-indicator status-offline" id="tavily-status"></span>
+            </div>
+            <div class="api-item">
+                <span>Flask 服务</span>
+                <span class="status-indicator status-online" id="flask-status"></span>
+            </div>
+        </div>
+        
+        <div class="dashboard">
+            <!-- 股票实时查询 -->
+            <div class="test-card">
+                <h3>
+                    <span class="icon" style="background: #e74c3c;"></span>
+                    📈 股票实时查询
+                </h3>
+                <div class="form-group">
+                    <label for="stock-code">股票代码</label>
+                    <input type="text" id="stock-code" placeholder="输入股票代码，如：000001, 600036" value="603516">
+                </div>
+                <div class="form-group">
+                    <label for="market">市场</label>
+                    <select id="market">
+                        <option value="SH">上海证券交易所 (SH)</option>
+                        <option value="SZ">深圳证券交易所 (SZ)</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="queryStock()">查询股票信息</button>
+                <div class="loading" id="stock-loading">正在查询股票信息...</div>
+                <div class="result-area" id="stock-result">点击查询按钮获取股票信息</div>
+            </div>
+            
+            <!-- AI 分析测试 -->
+            <div class="test-card">
+                <h3>
+                    <span class="icon" style="background: #9b59b6;"></span>
+                    🤖 AI 分析测试
+                </h3>
+                <div class="form-group">
+                    <label for="analysis-stock">分析股票</label>
+                    <input type="text" id="analysis-stock" placeholder="股票代码" value="603516">
+                </div>
+                <div class="form-group">
+                    <label for="analysis-type">分析类型</label>
+                    <select id="analysis-type">
+                        <option value="basic">基本面分析</option>
+                        <option value="technical">技术面分析</option>
+                        <option value="sentiment">情感面分析</option>
+                        <option value="comprehensive">综合分析</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="runAnalysis()">开始 AI 分析</button>
+                <div class="loading" id="analysis-loading">AI 正在分析中...</div>
+                <div class="result-area" id="analysis-result">点击开始分析</div>
+            </div>
+            
+            <!-- 新闻情感分析 -->
+            <div class="test-card">
+                <h3>
+                    <span class="icon" style="background: #f39c12;"></span>
+                    📰 新闻情感分析
+                </h3>
+                <div class="form-group">
+                    <label for="news-query">搜索关键词</label>
+                    <input type="text" id="news-query" placeholder="输入公司名称或股票代码" value="淳中科技">
+                </div>
+                <div class="form-group">
+                    <label for="news-days">时间范围</label>
+                    <select id="news-days">
+                        <option value="1">最近1天</option>
+                        <option value="3">最近3天</option>
+                        <option value="7" selected>最近7天</option>
+                        <option value="30">最近30天</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="analyzeNews()">分析新闻情感</button>
+                <div class="loading" id="news-loading">正在分析新闻情感...</div>
+                <div class="result-area" id="news-result">点击开始分析新闻</div>
+            </div>
+            
+            <!-- 技术指标计算 -->
+            <div class="test-card">
+                <h3>
+                    <span class="icon" style="background: #27ae60;"></span>
+                    📊 技术指标计算
+                </h3>
+                <div class="form-group">
+                    <label for="tech-stock">股票代码</label>
+                    <input type="text" id="tech-stock" placeholder="股票代码" value="603516">
+                </div>
+                <div class="form-group">
+                    <label for="tech-period">计算周期</label>
+                    <select id="tech-period">
+                        <option value="20">20日</option>
+                        <option value="60" selected>60日</option>
+                        <option value="120">120日</option>
+                        <option value="250">250日</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="calculateTechnical()">计算技术指标</button>
+                <div class="loading" id="tech-loading">正在计算技术指标...</div>
+                <div class="result-area" id="tech-result">点击计算技术指标</div>
+            </div>
+            
+            <!-- 回测系统测试 -->
+            <div class="test-card">
+                <h3>
+                    <span class="icon" style="background: #16a085;"></span>
+                    📈 回测系统测试
+                </h3>
+                <div class="form-group">
+                    <label for="backtest-strategy">策略类型</label>
+                    <select id="backtest-strategy">
+                        <option value="ma_cross">均线交叉</option>
+                        <option value="rsi_reversal">RSI反转</option>
+                        <option value="bollinger">布林带</option>
+                        <option value="momentum">动量策略</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="backtest-period">回测周期</label>
+                    <select id="backtest-period">
+                        <option value="1m">1个月</option>
+                        <option value="3m">3个月</option>
+                        <option value="6m" selected>6个月</option>
+                        <option value="1y">1年</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="runBacktest()">运行回测</button>
+                <div class="loading" id="backtest-loading">正在运行回测...</div>
+                <div class="result-area" id="backtest-result">点击运行回测</div>
+            </div>
+            
+            <!-- 系统状态检查 -->
+            <div class="test-card">
+                <h3>
+                    <span class="icon" style="background: #34495e;"></span>
+                    🔧 系统状态检查
+                </h3>
+                <button class="btn success" onclick="checkSystemHealth()">检查系统健康状态</button>
+                <button class="btn" onclick="testApiConnections()" style="margin-top: 10px;">测试 API 连接</button>
+                <button class="btn danger" onclick="clearCache()" style="margin-top: 10px;">清理缓存</button>
+                <div class="loading" id="system-loading">正在检查系统状态...</div>
+                <div class="result-area" id="system-result">点击检查系统状态</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; 2024 Trading Agent 测试面板 | 仅用于开发和测试目的</p>
+        </div>
+    </div>
+
+    <script>
+        // 模拟API调用函数
+        function mockApiCall(endpoint, data = {}) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({
+                        success: true,
+                        data: {
+                            message: `模拟调用 ${endpoint} 成功`,
+                            timestamp: new Date().toISOString(),
+                            ...data
+                        }
+                    });
+                }, Math.random() * 2000 + 1000);
+            });
+        }
+
+        // 显示加载状态
+        function showLoading(loadingId, resultId) {
+            document.getElementById(loadingId).style.display = 'block';
+            document.getElementById(resultId).textContent = '';
+        }
+
+        // 隐藏加载状态
+        function hideLoading(loadingId) {
+            document.getElementById(loadingId).style.display = 'none';
+        }
+
+        // 显示结果
+        function showResult(resultId, result) {
+            document.getElementById(resultId).textContent = JSON.stringify(result, null, 2);
+        }
+
+        // 股票查询
+        async function queryStock() {
+            const stockCode = document.getElementById('stock-code').value;
+            const market = document.getElementById('market').value;
+            
+            if (!stockCode) {
+                alert('请输入股票代码');
+                return;
+            }
+            
+            showLoading('stock-loading', 'stock-result');
+            
+            try {
+                const result = await mockApiCall('/api/stock/query', {
+                    stock_code: stockCode,
+                    market: market,
+                    price: (Math.random() * 100 + 10).toFixed(2),
+                    change: ((Math.random() - 0.5) * 10).toFixed(2),
+                    volume: Math.floor(Math.random() * 10000000)
+                });
+                
+                showResult('stock-result', result);
+            } catch (error) {
+                showResult('stock-result', { error: error.message });
+            } finally {
+                hideLoading('stock-loading');
+            }
+        }
+
+        // AI分析
+        async function runAnalysis() {
+            const stockCode = document.getElementById('analysis-stock').value;
+            const analysisType = document.getElementById('analysis-type').value;
+            
+            if (!stockCode) {
+                alert('请输入股票代码');
+                return;
+            }
+            
+            showLoading('analysis-loading', 'analysis-result');
+            
+            try {
+                const result = await mockApiCall('/api/analysis/run', {
+                    stock_code: stockCode,
+                    analysis_type: analysisType,
+                    score: Math.floor(Math.random() * 40 + 60),
+                    recommendation: ['买入', '持有', '卖出'][Math.floor(Math.random() * 3)],
+                    confidence: (Math.random() * 0.4 + 0.6).toFixed(2)
+                });
+                
+                showResult('analysis-result', result);
+            } catch (error) {
+                showResult('analysis-result', { error: error.message });
+            } finally {
+                hideLoading('analysis-loading');
+            }
+        }
+
+        // 新闻情感分析
+        async function analyzeNews() {
+            const query = document.getElementById('news-query').value;
+            const days = document.getElementById('news-days').value;
+            
+            if (!query) {
+                alert('请输入搜索关键词');
+                return;
+            }
+            
+            showLoading('news-loading', 'news-result');
+            
+            try {
+                const result = await mockApiCall('/api/news/sentiment', {
+                    query: query,
+                    days: days,
+                    sentiment_score: (Math.random() * 2 - 1).toFixed(2),
+                    news_count: Math.floor(Math.random() * 20 + 5),
+                    positive_ratio: (Math.random() * 0.6 + 0.2).toFixed(2)
+                });
+                
+                showResult('news-result', result);
+            } catch (error) {
+                showResult('news-result', { error: error.message });
+            } finally {
+                hideLoading('news-loading');
+            }
+        }
+
+        // 技术指标计算
+        async function calculateTechnical() {
+            const stockCode = document.getElementById('tech-stock').value;
+            const period = document.getElementById('tech-period').value;
+            
+            if (!stockCode) {
+                alert('请输入股票代码');
+                return;
+            }
+            
+            showLoading('tech-loading', 'tech-result');
+            
+            try {
+                const result = await mockApiCall('/api/technical/calculate', {
+                    stock_code: stockCode,
+                    period: period,
+                    ma: (Math.random() * 50 + 30).toFixed(2),
+                    rsi: Math.floor(Math.random() * 40 + 30),
+                    macd: (Math.random() * 2 - 1).toFixed(4),
+                    bollinger_upper: (Math.random() * 60 + 40).toFixed(2),
+                    bollinger_lower: (Math.random() * 40 + 20).toFixed(2)
+                });
+                
+                showResult('tech-result', result);
+            } catch (error) {
+                showResult('tech-result', { error: error.message });
+            } finally {
+                hideLoading('tech-loading');
+            }
+        }
+
+        // 回测系统
+        async function runBacktest() {
+            const strategy = document.getElementById('backtest-strategy').value;
+            const period = document.getElementById('backtest-period').value;
+            
+            showLoading('backtest-loading', 'backtest-result');
+            
+            try {
+                const result = await mockApiCall('/api/backtest/run', {
+                    strategy: strategy,
+                    period: period,
+                    total_return: ((Math.random() * 0.6 - 0.1) * 100).toFixed(2) + '%',
+                    sharpe_ratio: (Math.random() * 2 + 0.5).toFixed(2),
+                    max_drawdown: (Math.random() * 0.3 * 100).toFixed(2) + '%',
+                    win_rate: (Math.random() * 0.4 + 0.4 * 100).toFixed(1) + '%'
+                });
+                
+                showResult('backtest-result', result);
+            } catch (error) {
+                showResult('backtest-result', { error: error.message });
+            } finally {
+                hideLoading('backtest-loading');
+            }
+        }
+
+        // 系统健康检查
+        async function checkSystemHealth() {
+            showLoading('system-loading', 'system-result');
+            
+            try {
+                const result = await mockApiCall('/api/system/health', {
+                    cpu_usage: (Math.random() * 60 + 20).toFixed(1) + '%',
+                    memory_usage: (Math.random() * 40 + 30).toFixed(1) + '%',
+                    disk_usage: (Math.random() * 30 + 40).toFixed(1) + '%',
+                    active_connections: Math.floor(Math.random() * 50 + 10),
+                    uptime: Math.floor(Math.random() * 86400) + ' seconds'
+                });
+                
+                showResult('system-result', result);
+            } catch (error) {
+                showResult('system-result', { error: error.message });
+            } finally {
+                hideLoading('system-loading');
+            }
+        }
+
+        // 测试API连接
+        async function testApiConnections() {
+            showLoading('system-loading', 'system-result');
+            
+            try {
+                const apis = ['tushare', 'dashscope', 'tavily', 'openai'];
+                const results = {};
+                
+                for (const api of apis) {
+                    const connected = Math.random() > 0.3;
+                    results[api] = {
+                        status: connected ? 'connected' : 'failed',
+                        response_time: connected ? Math.floor(Math.random() * 500 + 100) + 'ms' : 'timeout'
+                    };
+                    
+                    // 更新状态指示器
+                    const indicator = document.getElementById(api + '-status');
+                    if (indicator) {
+                        indicator.className = `status-indicator ${connected ? 'status-online' : 'status-offline'}`;
+                    }
+                }
+                
+                showResult('system-result', { api_connections: results });
+            } catch (error) {
+                showResult('system-result', { error: error.message });
+            } finally {
+                hideLoading('system-loading');
+            }
+        }
+
+        // 清理缓存
+        async function clearCache() {
+            showLoading('system-loading', 'system-result');
+            
+            try {
+                const result = await mockApiCall('/api/system/clear-cache', {
+                    cleared_items: Math.floor(Math.random() * 1000 + 100),
+                    freed_space: (Math.random() * 100 + 50).toFixed(1) + 'MB'
+                });
+                
+                showResult('system-result', result);
+            } catch (error) {
+                showResult('system-result', { error: error.message });
+            } finally {
+                hideLoading('system-loading');
+            }
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 模拟初始API状态检查
+            setTimeout(testApiConnections, 1000);
+        });
+    </script>
+</body>
+</html>

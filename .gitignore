@@ -1,9 +1,109 @@
-env/
+# Python
 __pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+venv_ashare/
+
+# IDE and OS
 .DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+Thumbs.db
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Log files
+*.log
+logs/
+log/
+
+# Data files
 *.csv
+*.xlsx
+*.xls
+*.json
+factor_data/
+data/
+datasets/
 src/
 eval_results/
 eval_data/
-*.egg-info/
-.env
+
+# Analysis results and reports (Chinese files)
+*分析报告*.md
+*分析报告*.json
+*分析报告*.txt
+*analysis_report*.json
+*comprehensive_analysis*.json
+*evaluation*.json
+*backtest_results*.json
+*stock_screening_result*.json
+*建设工业*.md
+*中际旭创*.md
+*汇金股份*.md
+*果麦文化*.md
+*铜冠铜箔*.md
+*京城股份*.json
+*华康洁净*.json
+*淳中科技*.json
+*东阳光*.json
+*中船应急*.json
+*海啸影响*.json
+*红旗连锁*.json
+*股票分析*.json
+*多智能体*.json
+*真实数据*.json
+*重启人生*.xlsx
+
+# External downloads
+downloaded_crawlers/
+
+# Cache and temporary
+.cache/
+.pytest_cache/
+tmp/
+temp/
+*.tmp
+*.bak
+*.backup
+
+# Archive files
+*.tar.gz
+*.zip
+*.rar
+
+# UV lock file
+uv.lock

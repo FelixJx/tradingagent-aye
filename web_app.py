@@ -11,11 +11,11 @@ import time
 # 添加项目路径
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# 设置API密钥
-os.environ['TUSHARE_TOKEN'] = 'b34d8920b99b43d48df7e792a4708a29f868feeee30d9c84b54bf065'
-os.environ['DEEPSEEK_API_KEY'] = 'sk-831cb74319af43ebbfd7ad5e13fd4dfd'
-os.environ['DASHSCOPE_API_KEY'] = 'sk-e050041b41674ed7b87644895ebae718'
-os.environ['TAVILY_API_KEY'] = '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'
+# 导入配置管理
+from config import get_config
+
+# 初始化配置
+config = get_config()
 
 app = Flask(__name__)
 
@@ -310,6 +310,22 @@ def home():
             '技术指标计算',
             '多智能体决策'
         ]
+    })
+
+@app.route('/test')
+def test_dashboard():
+    """测试面板页面"""
+    return render_template('test_dashboard.html')
+
+@app.route('/api/config/check')
+def check_config():
+    """检查配置状态"""
+    api_status = config.check_api_availability()
+    return jsonify({
+        'apis': api_status,
+        'trading_config': config.get_trading_config(),
+        'flask_env': config.flask_env,
+        'timestamp': datetime.now().isoformat()
     })
 
 @app.route('/api/info')
