@@ -4,18 +4,23 @@ import sys
 import json
 import traceback
 from datetime import datetime, timedelta
-import asyncio
-import threading
 import time
 
 # 添加项目路径
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# 导入配置管理
-from config import get_config
-
-# 初始化配置
-config = get_config()
+# 尝试导入配置管理，如果失败则使用简化配置
+try:
+    from config import get_config
+    config = get_config()
+except ImportError:
+    try:
+        from config_simple import get_simple_config
+        config = get_simple_config()
+        print("Using simplified configuration")
+    except ImportError:
+        print("Warning: no config module available, using environment variables directly")
+        config = None
 
 app = Flask(__name__)
 
