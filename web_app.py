@@ -1140,7 +1140,10 @@ def stream_analyze():
 @app.route('/ai-dashboard')
 def ai_dashboard():
     """AI分析仪表板页面"""
-    return render_template('ai_analysis_dashboard.html')
+    try:
+        return render_template('ai_analysis_dashboard.html')
+    except Exception as e:
+        return f"AI仪表板加载失败: {str(e)}", 500
 
 # 定期清理缓存
 def cleanup_cache():
