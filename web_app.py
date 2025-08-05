@@ -159,9 +159,12 @@ def get_stock_data(symbol):
         
         print(f"🔧 Environment check: OS_ENV={flask_env}, CONFIG_ENV={config_env}, REAL_DATA={REAL_DATA_AVAILABLE}")
         
-        # 使用直接的环境变量检查，不依赖config对象
-        if REAL_DATA_AVAILABLE and flask_env == 'production':
-            print(f"🔄 Fetching REAL stock data for {symbol} (production mode)")
+        # 强制在Render部署环境中使用真实数据（临时修复）
+        is_render_deployment = os.getenv('RENDER') or os.getenv('RENDER_SERVICE_ID') or 'render' in os.getcwd().lower()
+        should_use_real_data = REAL_DATA_AVAILABLE and (flask_env == 'production' or is_render_deployment)
+        
+        if should_use_real_data:
+            print(f"🔄 Fetching REAL stock data for {symbol} (env: {flask_env}, render: {is_render_deployment})")
             return get_real_stock_data(symbol)
         
         # 开发环境或API不可用时使用模拟数据
@@ -205,7 +208,11 @@ def get_news_analysis(symbol):
         # 直接检查环境变量
         flask_env = os.getenv('FLASK_ENV', 'development')
         
-        if REAL_DATA_AVAILABLE and flask_env == 'production':
+        # 强制在Render部署环境中使用真实数据
+        is_render_deployment = os.getenv('RENDER') or os.getenv('RENDER_SERVICE_ID') or 'render' in os.getcwd().lower()
+        should_use_real_data = REAL_DATA_AVAILABLE and (flask_env == 'production' or is_render_deployment)
+        
+        if should_use_real_data:
             print(f"🔄 Fetching REAL news data for {symbol}")
             return get_real_news_analysis(symbol)
         
@@ -260,7 +267,8 @@ def multi_agent_analysis(symbol, stock_data, news_data, technical_data):
     try:
         # 直接检查环境变量
         flask_env = os.getenv('FLASK_ENV', 'development')
-        use_llm = REAL_DATA_AVAILABLE and flask_env == 'production'
+        is_render_deployment = os.getenv('RENDER') or os.getenv('RENDER_SERVICE_ID') or 'render' in os.getcwd().lower()
+        use_llm = REAL_DATA_AVAILABLE and (flask_env == 'production' or is_render_deployment)
         
         print(f"🤖 Running multi-agent analysis for {symbol} (ENV: {flask_env}, LLM: {use_llm})")
         
@@ -583,12 +591,13 @@ def generate_thinking_process(symbol, mode, agents_analysis):
     """生成真实的思考过程 - 反映实际API调用"""
     # 直接检查环境变量，不依赖config对象
     flask_env = os.getenv('FLASK_ENV', 'development')
-    use_real_data = REAL_DATA_AVAILABLE and flask_env == 'production'
+    is_render_deployment = os.getenv('RENDER') or os.getenv('RENDER_SERVICE_ID') or 'render' in os.getcwd().lower()
+    use_real_data = REAL_DATA_AVAILABLE and (flask_env == 'production' or is_render_deployment)
     
     thinking_steps = [
         f'🔍 开始分析股票 {symbol} - {get_stock_name(symbol)}',
         f'📊 选择分析模式: {mode}',
-        f'🔧 系统环境: {flask_env} | 真实数据: {"✅" if use_real_data else "❌模拟模式"}',
+        f'🔧 系统环境: {flask_env} | Render检测: {"✅" if is_render_deployment else "❌"} | 真实数据: {"✅" if use_real_data else "❌模拟模式"}',
         '',
         '🌐 数据获取阶段:',
         f'├─ {"🔄 Tushare/AKShare实时数据获取..." if use_real_data else "⚠️ 使用模拟股票数据"}',

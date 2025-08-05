@@ -43,16 +43,31 @@ class RealDataIntegrator:
         logger.info(f"Real data integration initialized - Tushare: {self.tushare_enabled}, DashScope: {self.dashscope_enabled}, Tavily: {self.tavily_enabled}")
 
     def get_real_stock_data(self, symbol: str) -> Dict[str, Any]:
-        """获取真实股票数据"""
-        if self.tushare_enabled:
-            try:
-                return self._get_tushare_data(symbol)
-            except Exception as e:
-                logger.error(f"Tushare data fetch failed: {e}")
-                return self._get_akshare_fallback(symbol)
-        else:
-            logger.warning("Tushare not configured, using AKShare fallback")
-            return self._get_akshare_fallback(symbol)
+        """获取真实股票数据 - 增强重试机制"""
+        attempts = [
+            ("Tushare", self._get_tushare_data if self.tushare_enabled else None),
+            ("AKShare", self._get_akshare_fallback),
+        ]
+        
+        for source_name, method in attempts:
+            if method is None:
+                continue
+                
+            for retry in range(2):  # 每个源重试2次
+                try:
+                    logger.info(f"Attempting to fetch data from {source_name} (attempt {retry + 1})")
+                    result = method(symbol)
+                    result['data_source'] = source_name.lower()
+                    logger.info(f"Successfully fetched data from {source_name}")
+                    return result
+                except Exception as e:
+                    logger.warning(f"{source_name} attempt {retry + 1} failed: {e}")
+                    if retry == 1:  # 最后一次重试
+                        logger.error(f"{source_name} failed after 2 attempts: {e}")
+        
+        # 所有数据源都失败，返回增强的模拟数据
+        logger.error("All real data sources failed, using enhanced mock data")
+        return self._get_mock_data(symbol)
     
     def _get_tushare_data(self, symbol: str) -> Dict[str, Any]:
         """使用Tushare获取数据"""
@@ -148,16 +163,25 @@ class RealDataIntegrator:
             return self._get_mock_data(symbol)
     
     def get_real_news_analysis(self, symbol: str) -> Dict[str, Any]:
-        """获取真实新闻分析"""
+        """获取真实新闻分析 - 增强重试机制"""
         if self.tavily_enabled:
-            try:
-                return self._search_with_tavily(symbol)
-            except Exception as e:
-                logger.error(f"Tavily search failed: {e}")
-                return self._get_mock_news_data(symbol)
+            for retry in range(3):  # Tavily重试3次
+                try:
+                    logger.info(f"Attempting Tavily news search (attempt {retry + 1})")
+                    result = self._search_with_tavily(symbol)
+                    result['data_source'] = 'tavily'
+                    logger.info("Successfully fetched news from Tavily")
+                    return result
+                except Exception as e:
+                    logger.warning(f"Tavily attempt {retry + 1} failed: {e}")
+                    if retry == 2:  # 最后一次重试
+                        logger.error(f"Tavily failed after 3 attempts: {e}")
         else:
-            logger.warning("Tavily not configured, using mock news data")
-            return self._get_mock_news_data(symbol)
+            logger.warning("Tavily not configured")
+        
+        # Tavily失败，返回增强的模拟新闻数据
+        logger.info("Using enhanced mock news data")
+        return self._get_mock_news_data(symbol)
     
     def _search_with_tavily(self, symbol: str) -> Dict[str, Any]:
         """使用Tavily搜索新闻"""
