@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: tradingagent
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn web_app:app
+    envVars:
+      - key: TUSHARE_TOKEN
+        value: b34d8920b99b43d48df7e792a4708a29f868feeee30d9c84b54bf065
+      - key: DASHSCOPE_API_KEY  
+        value: sk-e050041b41674ed7b87644895ebae718
+      - key: LOG_LEVEL
+        value: INFO
+      - key: PYTHONPATH
+        value: /opt/render/project/src

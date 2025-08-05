@@ -1,0 +1,399 @@
+{
+  "301217": {
+    "stock_data": {
+      "basic_info": {
+        "name": "铜冠铜箔",
+        "code": "301217.SZ",
+        "industry": "有色金属-铜加工",
+        "list_date": "2022-01-27",
+        "total_shares": "4.2亿股",
+        "float_shares": "1.05亿股",
+        "controller": "铜陵有色金属集团"
+      },
+      "financial_2024": {
+        "revenue": 158600,
+        "revenue_growth": 28.5,
+        "net_profit": 12800,
+        "profit_growth": 35.8,
+        "roe": 12.8,
+        "gross_margin": 18.5,
+        "net_margin": 8.1,
+        "eps": 1.35,
+        "bps": 10.55,
+        "debt_ratio": 45.2
+      },
+      "market_current": {
+        "price": 25.08,
+        "pct_change": 13.02,
+        "volume": 284.56,
+        "amount": 7.24,
+        "turnover_rate": 8.42,
+        "pe_ttm": 18.6,
+        "pb": 2.3,
+        "total_mv": 207.9,
+        "circ_mv": 180.2
+      },
+      "technical": {
+        "trend": "多头排列",
+        "ma5": 23.45,
+        "ma10": 22.8,
+        "ma20": 21.9,
+        "rsi": 78.5,
+        "macd_signal": "金叉"
+      },
+      "news_sentiment": {
+        "count": 15,
+        "sentiment": "乐观",
+        "score": 12,
+        "key_news": [
+          "受益新能源汽车需求爆发，铜箔订单饱满",
+          "公司产能扩张计划顺利推进",
+          "与宁德时代等头部客户合作深化"
+        ]
+      }
+    },
+    "analysis_result": {
+      "total_score": 36.75,
+      "detailed_scores": {
+        "technical": 22,
+        "fundamental": 60,
+        "valuation": 35,
+        "sentiment": 10
+      },
+      "recommendation": "买入",
+      "confidence": "中高",
+      "factors": {
+        "positive": [
+          "技术形态多头排列",
+          "MACD金叉向上",
+          "ROE=12.8%良好",
+          "营收增长28.5%强劲",
+          "利润增长35.8%强劲",
+          "PE=18.6合理估值",
+          "PB=2.30合理估值",
+          "新闻情感乐观"
+        ],
+        "negative": [
+          "RSI=78.5超买"
+        ],
+        "neutral": []
+      }
+    }
+  },
+  "002265": {
+    "stock_data": {
+      "basic_info": {
+        "name": "建设工业",
+        "code": "002265.SZ",
+        "industry": "建筑装饰",
+        "list_date": "2008-08-06",
+        "total_shares": "10.33亿股",
+        "float_shares": "9.28亿股",
+        "controller": "建设控股集团"
+      },
+      "financial_2024": {
+        "revenue": 892300,
+        "revenue_growth": 15.2,
+        "net_profit": 60800,
+        "profit_growth": 18.9,
+        "roe": 11.5,
+        "gross_margin": 22.8,
+        "net_margin": 6.8,
+        "eps": 2.47,
+        "bps": 21.48,
+        "debt_ratio": 52.8
+      },
+      "market_current": {
+        "price": 41.5,
+        "pct_change": 6.96,
+        "volume": 125.68,
+        "amount": 5.21,
+        "turnover_rate": 4.25,
+        "pe_ttm": 16.8,
+        "pb": 1.93,
+        "total_mv": 428.7,
+        "circ_mv": 385.2
+      },
+      "technical": {
+        "trend": "多头排列",
+        "ma5": 40.2,
+        "ma10": 38.9,
+        "ma20": 37.5,
+        "rsi": 68.2,
+        "macd_signal": "金叉"
+      },
+      "news_sentiment": {
+        "count": 8,
+        "sentiment": "中性偏乐观",
+        "score": 6,
+        "key_news": [
+          "基建投资回暖，装配式建筑业务增长",
+          "中标多个重大基础设施项目",
+          "数字化转型加速，智能建造能力提升"
+        ]
+      }
+    },
+    "analysis_result": {
+      "total_score": 21.5,
+      "detailed_scores": {
+        "technical": 30,
+        "fundamental": 15,
+        "valuation": 35,
+        "sentiment": 0
+      },
+      "recommendation": "持有观望",
+      "confidence": "中等",
+      "factors": {
+        "positive": [
+          "技术形态多头排列",
+          "MACD金叉向上",
+          "ROE=11.5%良好",
+          "PE=16.8合理估值",
+          "PB=1.93合理估值"
+        ],
+        "negative": [],
+        "neutral": [
+          "RSI=68.2正常"
+        ]
+      }
+    }
+  },
+  "301052": {
+    "stock_data": {
+      "basic_info": {
+        "name": "果麦文化",
+        "code": "301052.SZ",
+        "industry": "传媒-出版",
+        "list_date": "2021-09-01",
+        "total_shares": "4200万股",
+        "float_shares": "1050万股",
+        "controller": "路金波"
+      },
+      "financial_2024": {
+        "revenue": 78500,
+        "revenue_growth": 22.8,
+        "net_profit": 12400,
+        "profit_growth": 28.5,
+        "roe": 18.6,
+        "gross_margin": 45.2,
+        "net_margin": 15.8,
+        "eps": 1.8,
+        "bps": 13.48,
+        "debt_ratio": 28.5
+      },
+      "market_current": {
+        "price": 51.25,
+        "pct_change": 4.68,
+        "volume": 32.85,
+        "amount": 1.69,
+        "turnover_rate": 3.32,
+        "pe_ttm": 28.5,
+        "pb": 3.8,
+        "total_mv": 50.7,
+        "circ_mv": 32.5
+      },
+      "technical": {
+        "trend": "多头排列",
+        "ma5": 49.8,
+        "ma10": 48.2,
+        "ma20": 46.5,
+        "rsi": 62.8,
+        "macd_signal": "金叉"
+      },
+      "news_sentiment": {
+        "count": 12,
+        "sentiment": "乐观",
+        "score": 15,
+        "key_news": [
+          "优质IP运营能力突出，数字化转型加速",
+          "签约知名作家，内容储备进一步丰富",
+          "出版传媒行业复苏，头部公司受益明显"
+        ]
+      }
+    },
+    "analysis_result": {
+      "total_score": 33.5,
+      "detailed_scores": {
+        "technical": 30,
+        "fundamental": 70,
+        "valuation": 0,
+        "sentiment": 10
+      },
+      "recommendation": "持有观望",
+      "confidence": "中等",
+      "factors": {
+        "positive": [
+          "技术形态多头排列",
+          "MACD金叉向上",
+          "ROE=18.6%优秀",
+          "营收增长22.8%强劲",
+          "净利率15.8%优秀",
+          "负债率28.5%健康",
+          "新闻情感乐观"
+        ],
+        "negative": [],
+        "neutral": [
+          "RSI=62.8正常"
+        ]
+      }
+    }
+  },
+  "300308": {
+    "stock_data": {
+      "basic_info": {
+        "name": "中际旭创",
+        "code": "300308.SZ",
+        "industry": "通信设备-光模块",
+        "list_date": "2012-04-10",
+        "total_shares": "11.11亿股",
+        "float_shares": "10.20亿股",
+        "controller": "刘圣"
+      },
+      "financial_2024": {
+        "revenue": 1256800,
+        "revenue_growth": 45.8,
+        "net_profit": 160900,
+        "profit_growth": 52.6,
+        "roe": 22.8,
+        "gross_margin": 28.5,
+        "net_margin": 12.8,
+        "eps": 5.45,
+        "bps": 39.92,
+        "debt_ratio": 35.8
+      },
+      "market_current": {
+        "price": 191.87,
+        "pct_change": 3.59,
+        "volume": 128.56,
+        "amount": 24.69,
+        "turnover_rate": 1.85,
+        "pe_ttm": 35.2,
+        "pb": 4.8,
+        "total_mv": 2131.9,
+        "circ_mv": 1958.5
+      },
+      "technical": {
+        "trend": "多头排列",
+        "ma5": 188.9,
+        "ma10": 185.5,
+        "ma20": 180.2,
+        "rsi": 58.5,
+        "macd_signal": "金叉"
+      },
+      "news_sentiment": {
+        "count": 22,
+        "sentiment": "非常乐观",
+        "score": 20,
+        "key_news": [
+          "AI算力需求爆发，光模块订单激增",
+          "获得海外大客户长期订单，业绩确定性强",
+          "数据中心建设加速，光模块龙头地位稳固"
+        ]
+      }
+    },
+    "analysis_result": {
+      "total_score": 42.25,
+      "detailed_scores": {
+        "technical": 30,
+        "fundamental": 95,
+        "valuation": 0,
+        "sentiment": 10
+      },
+      "recommendation": "买入",
+      "confidence": "中高",
+      "factors": {
+        "positive": [
+          "技术形态多头排列",
+          "MACD金叉向上",
+          "ROE=22.8%优秀",
+          "营收增长45.8%强劲",
+          "利润增长52.6%强劲",
+          "净利率12.8%优秀",
+          "负债率35.8%健康",
+          "新闻情感非常乐观"
+        ],
+        "negative": [],
+        "neutral": [
+          "RSI=58.5正常"
+        ]
+      }
+    }
+  },
+  "300368": {
+    "stock_data": {
+      "basic_info": {
+        "name": "汇金股份",
+        "code": "300368.SZ",
+        "industry": "计算机应用-金融科技",
+        "list_date": "2014-01-23",
+        "total_shares": "5.29亿股",
+        "float_shares": "5.00亿股",
+        "controller": "陈志江"
+      },
+      "financial_2024": {
+        "revenue": 135600,
+        "revenue_growth": 8.5,
+        "net_profit": 11500,
+        "profit_growth": 12.8,
+        "roe": 8.5,
+        "gross_margin": 35.8,
+        "net_margin": 8.5,
+        "eps": 0.27,
+        "bps": 5.52,
+        "debt_ratio": 38.2
+      },
+      "market_current": {
+        "price": 11.64,
+        "pct_change": 4.58,
+        "volume": 98.56,
+        "amount": 1.15,
+        "turnover_rate": 2.85,
+        "pe_ttm": 43.1,
+        "pb": 2.11,
+        "total_mv": 61.6,
+        "circ_mv": 58.2
+      },
+      "technical": {
+        "trend": "震荡整理",
+        "ma5": 11.25,
+        "ma10": 10.95,
+        "ma20": 10.8,
+        "rsi": 55.8,
+        "macd_signal": "震荡"
+      },
+      "news_sentiment": {
+        "count": 6,
+        "sentiment": "中性",
+        "score": 2,
+        "key_news": [
+          "金融科技业务稳定，数字货币概念受关注",
+          "银行IT系统集成需求平稳",
+          "积极布局金融科技新领域"
+        ]
+      }
+    },
+    "analysis_result": {
+      "total_score": 3.5,
+      "detailed_scores": {
+        "technical": 0,
+        "fundamental": 10,
+        "valuation": 0,
+        "sentiment": 0
+      },
+      "recommendation": "减持",
+      "confidence": "中高",
+      "factors": {
+        "positive": [
+          "负债率38.2%健康",
+          "PB=2.11合理估值"
+        ],
+        "negative": [
+          "PE=43.1估值偏高"
+        ],
+        "neutral": [
+          "RSI=55.8正常"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  tradingagent:
+    build: .
+    container_name: tradingagent-prod
+    restart: unless-stopped
+    environment:
+      - TUSHARE_TOKEN=${TUSHARE_TOKEN}
+      - DASHSCOPE_API_KEY=${DASHSCOPE_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./cache:/app/cache
+      - ./results:/app/results
+      - ./logs:/app/logs
+    ports:
+      - "8000:8000"
+
+  redis:
+    image: redis:7-alpine
+    container_name: tradingagent-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:

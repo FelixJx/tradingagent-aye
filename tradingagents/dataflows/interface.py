@@ -4,6 +4,8 @@ from .yfin_utils import *
 from .stockstats_utils import *
 from .googlenews_utils import *
 from .finnhub_utils import get_data_in_range
+from .ashare_utils import *
+from .ashare_news_utils import *
 from dateutil.relativedelta import relativedelta
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime

@@ -124,6 +124,236 @@ You will need the OpenAI API for all the agents.
 export OPENAI_API_KEY=$YOUR_OPENAI_API_KEY
 ```
 
+## A股智能交易代理系统 (Chinese A-Share Intelligent Trading Agents)
+
+🎉 **全新A股专用版本发布！** 基于中国A股市场特色，我们开发了专门的多智能体交易系统，涵盖A股市场所有股票的智能分析和选股功能。
+
+### 🌟 A股专用特性
+
+- **🤖 六大专业智能体**: 市场分析师、基本面分析师、政策分析师、多头研究员、空头研究员、风险管理师
+- **📊 全面数据覆盖**: 通过Tushare和AKShare获取A股全市场数据
+- **🏛️ 政策敏感分析**: 专门针对A股政策市特色的政策影响分析
+- **🎯 A股特色适配**: 涨跌停制度、T+1交易、北向资金、中国会计准则
+- **🧠 千问模型优化**: 使用阿里云千问模型，更好理解中文金融语境
+
+### 🚀 快速开始A股系统
+
+#### 安装A股专用依赖
+```bash
+# 安装A股专用依赖包
+pip install -r requirements_ashare.txt
+```
+
+#### 配置API密钥
+```bash
+# Tushare数据源（必需）
+export TUSHARE_TOKEN="your_tushare_token_here"
+
+# 阿里云千问模型（推荐）
+export DASHSCOPE_API_KEY="your_dashscope_api_key_here"
+```
+
+#### 命令行快速使用
+```bash
+# 分析单只A股
+python ashare_cli.py analyze --symbol 000001.SZ
+
+# A股选股筛选
+python ashare_cli.py screen --market-cap-min 10000000000 --pe-max 30
+
+# 搜索A股股票
+python ashare_cli.py search --query "招商银行"
+```
+
+#### Python代码使用
+```python
+from tradingagents.ashare_trading_graph import AShareTradingGraph
+from tradingagents.ashare_config import get_ashare_config
+
+# 创建A股专用配置
+config = get_ashare_config()
+config.update({
+    "llm": {
+        "provider": "dashscope",
+        "model": "qwen-max",
+        "api_key": "your_dashscope_api_key"
+    },
+    "data_sources": {
+        "tushare_token": "your_tushare_token"
+    }
+})
+
+# 初始化A股交易图
+trading_graph = AShareTradingGraph(config)
+
+# 分析招商银行
+result = trading_graph.analyze_stock("600036.SH")
+print(result)
+
+# A股选股
+screened_stocks = trading_graph.screen_stocks({
+    "market_cap_min": 10000000000,  # 100亿市值以上
+    "pe_ratio_max": 30,             # PE小于30
+    "roe_min": 0.1                  # ROE大于10%
+})
+
+# 批量分析
+batch_results = trading_graph.batch_analyze(screened_stocks[:5])
+```
+
+### 📋 A股智能体架构
+
+#### 分析师团队
+- **市场分析师**: 专注A股技术指标分析，考虑涨跌停、量比等A股特色指标
+- **基本面分析师**: 基于中国会计准则的财务分析，关注ROE、负债率、现金流
+- **政策分析师**: 专门分析政策对A股的影响，包括货币政策、产业政策、监管政策
+
+#### 研究员团队
+- **多头研究员**: 挖掘A股投资机会，关注政策催化、业绩拐点、估值修复
+- **空头研究员**: 识别A股投资风险，关注商誉减值、关联交易、流动性风险
+
+#### 风险管理
+- **风险管理师**: 综合评估投资风险，考虑A股特有的系统性风险和政策风险
+
+### 🎯 A股选股功能
+
+支持多维度股票筛选：
+
+```python
+# 价值股筛选
+value_criteria = {
+    "pe_ratio_max": 15,        # 低估值
+    "pb_ratio_max": 2,         # 低市净率
+    "roe_min": 0.15,           # 高ROE
+    "debt_ratio_max": 0.5      # 低负债
+}
+
+# 成长股筛选
+growth_criteria = {
+    "revenue_growth_min": 0.2,  # 营收增长20%+
+    "profit_growth_min": 0.3,   # 利润增长30%+
+    "market_cap_min": 5000000000  # 50亿市值以上
+}
+
+# 政策受益股筛选
+policy_criteria = {
+    "industries": ["新能源", "半导体", "生物医药"],
+    "exclude_st": True,
+    "volume_ratio_min": 1.2
+}
+```
+
+### 📊 详细文档
+
+完整的A股系统使用指南请参考：[A股系统README](README_ASHARE.md)
+
+---
+
+## 原版美股系统配置 (Original US Stock System)
+
+### 数据源配置 (Data Source Configuration)
+
+#### FinnHub API配置
+```bash
+export FINNHUB_API_KEY=$YOUR_FINNHUB_API_KEY
+```
+
+#### OpenAI API配置
+```bash
+export OPENAI_API_KEY=$YOUR_OPENAI_API_KEY
+```
+
+### 新闻数据源配置 (News Data Sources)
+
+#### 财联社新闻数据
+可以通过GitHub获取财联社的新闻数据：
+```bash
+# 克隆财联社新闻爬虫项目
+git clone https://github.com/your-repo/cailianshe-news-crawler.git
+```
+
+#### 新浪财经新闻数据
+新浪财经新闻数据获取：
+```bash
+# 克隆新浪财经新闻爬虫项目
+git clone https://github.com/your-repo/sina-finance-news-crawler.git
+```
+
+#### 集成新闻数据到TradingAgents
+```python
+# 在dataflows/interface.py中添加中文新闻获取函数
+def get_cailianshe_news(stock_code, current_date, lookback_days=7):
+    """
+    获取财联社相关股票新闻
+    """
+    # 实现财联社新闻获取逻辑
+    pass
+
+def get_sina_finance_news(stock_code, current_date, lookback_days=7):
+    """
+    获取新浪财经相关股票新闻
+    """
+    # 实现新浪财经新闻获取逻辑
+    pass
+```
+
+### A股使用示例 (A-Share Usage Example)
+
+```python
+from tradingagents.graph.trading_graph import TradingAgentsGraph
+from tradingagents.default_config import DEFAULT_CONFIG
+import tushare as ts
+import akshare as ak
+
+# 设置数据源
+ts.set_token('b34d8920b99b43d48df7e792a4708a29f868feeee30d9c84b54bf065')
+
+# A股配置
+config = DEFAULT_CONFIG.copy()
+config.update({
+    "llm_provider": "dashscope",
+    "deep_think_llm": "qwen-max",
+    "quick_think_llm": "qwen-turbo",
+    "max_debate_rounds": 3,
+    "online_tools": True,
+    "market_region": "china",
+    "data_sources": {
+        "tushare": True,
+        "akshare": True,
+        "cailianshe": True,
+        "sina_finance": True
+    }
+})
+
+# 初始化交易智能体
+ta = TradingAgentsGraph(debug=True, config=config)
+
+# 分析热门A股
+stocks_to_analyze = [
+    "000001",  # 平安银行
+    "000002",  # 万科A
+    "600036",  # 招商银行
+    "600519",  # 贵州茅台
+    "000858"   # 五粮液
+]
+
+for stock in stocks_to_analyze:
+    print(f"\n分析股票: {stock}")
+    _, decision = ta.propagate(stock, "2024-12-20")
+    print(f"决策结果: {decision}")
+    
+    # 记忆和反思
+    ta.reflect_and_remember(stock, decision)
+```
+
+### 注意事项 (Important Notes)
+
+1. **合规性**: 请确保遵守中国证监会相关法规，本工具仅供研究和学习使用
+2. **数据质量**: Tushare提供更专业的数据，AKShare数据免费但可能存在延迟
+3. **交易时间**: A股交易时间为工作日09:30-15:00，请注意时区设置
+4. **模型选择**: 千问模型对中文金融术语理解更好，推荐用于A股分析
+5. **风险提示**: 本工具不构成投资建议，投资有风险，入市需谨慎
+
 ### CLI Usage
 
 You can also try out the CLI directly by running:

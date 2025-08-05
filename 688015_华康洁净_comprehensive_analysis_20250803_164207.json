@@ -1,0 +1,111 @@
+{
+  "股票信息": {
+    "代码": "688015", 
+    "行业": "环保设备制造", 
+    "板块": "科创板", 
+    "名称": "华康洁净", 
+    "全称": "华康洁净环境科技股份有限公司"
+  }, 
+  "基本面分析": {
+    "total_score": 82.085, 
+    "scores": {
+      "growth": 76.125, 
+      "financial_health": 100, 
+      "margin": 80.4, 
+      "profitability": 81.2, 
+      "valuation": 72.7
+    }
+  }, 
+  "风险评估": {
+    "risk_score": 10, 
+    "risks": [
+      "市值较小流动性风险(28.6亿)"
+    ], 
+    "risk_level": "低风险"
+  }, 
+  "市场环境": {
+    "industry_outlook": {
+      "竞争强度": "中等", 
+      "评分": 85, 
+      "政策支持": "强", 
+      "景气度": "高", 
+      "发展阶段": "快速成长期", 
+      "技术壁垒": "中高", 
+      "关键驱动": [
+        "双碳政策", 
+        "环保标准提升", 
+        "绿色发展"
+      ]
+    }, 
+    "market_sentiment": {
+      "score": 40, 
+      "sentiment": "偏悲观", 
+      "price_position": 0.3982485404503753
+    }
+  }, 
+  "投资信号": {
+    "signal": "买入", 
+    "position_size": "3-5%", 
+    "scores": {
+      "total": 77.45439999999999, 
+      "technical": 82.84400000000001, 
+      "fundamental": 82.085, 
+      "market": 62.5
+    }, 
+    "hold_period": "中期(3-6个月)", 
+    "confidence": "中高"
+  }, 
+  "分析时间": "2025-08-03T16:42:07.172857", 
+  "市场数据": {
+    "technical_data": {
+      "volume_ratio": 1.35, 
+      "volatility_20d": 0.067, 
+      "ma60": 24.12, 
+      "ma10": 26.94, 
+      "rsi14": 64.2, 
+      "macd": 0.48, 
+      "ma20": 25.67, 
+      "ma5": 27.82
+    }, 
+    "price_data": {
+      "change_pct": 2.18, 
+      "pe_ratio": 22.3, 
+      "current_price": 28.45, 
+      "turnover": 35420000, 
+      "52w_high": 42.88, 
+      "market_cap": 2856000000, 
+      "pb_ratio": 3.2, 
+      "volume": 1245600, 
+      "52w_low": 18.9
+    }, 
+    "basic_info": {
+      "industry": "环保设备制造", 
+      "sector": "环保科技", 
+      "listing_date": "2021-11-12", 
+      "full_name": "华康洁净环境科技股份有限公司", 
+      "market": "科创板"
+    }, 
+    "fundamental_data": {
+      "current_ratio": 2.1, 
+      "roa": 8.5, 
+      "revenue_growth_yoy": 15.6, 
+      "roe": 12.8, 
+      "revenue_2025q1": 280000000, 
+      "profit_growth_yoy": 8.9, 
+      "net_profit_2025q1": 42000000, 
+      "gross_margin": 35.2, 
+      "debt_ratio": 0.32
+    }
+  }, 
+  "技术面分析": {
+    "total_score": 82.84400000000001, 
+    "scores": {
+      "macd": 84.0, 
+      "trend": 90, 
+      "volatility": 46.4, 
+      "momentum": 94.32, 
+      "volume": 99.5
+    }, 
+    "trend_status": "强势上升趋势"
+  }
+}

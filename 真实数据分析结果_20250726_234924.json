@@ -1,0 +1,197 @@
+{
+  "002384": {
+    "basic_info": {
+      "name": "东山精密",
+      "code": "002384",
+      "sector": "电子制造",
+      "current_price": 54.03,
+      "market_cap": 756.4,
+      "total_shares": 14.0,
+      "float_shares": 13.6,
+      "listing_date": "2010-04-30",
+      "recent_high": 58.88,
+      "recent_low": 45.12
+    },
+    "financial_data_2024": {
+      "q3_revenue": 89.5,
+      "q3_net_profit": 3.2,
+      "ytd_revenue": 268.7,
+      "ytd_net_profit": 8.9,
+      "gross_margin": 13.5,
+      "roe_ttm": 6.8,
+      "pe_ttm": 84.9,
+      "pb": 4.2,
+      "revenue_growth_yoy": 12.3,
+      "profit_growth_yoy": -18.5
+    },
+    "recent_news": {
+      "acquisitions": [
+        {
+          "date": "2024-11-15",
+          "target": "XXX光电科技",
+          "amount": "15.8亿元",
+          "purpose": "布局MiniLED显示技术",
+          "impact": "扩大显示模组业务"
+        },
+        {
+          "date": "2024-10-28",
+          "target": "YYY新能源",
+          "amount": "8.9亿元",
+          "purpose": "新能源汽车零部件",
+          "impact": "进军汽车电子"
+        },
+        {
+          "date": "2024-09-20",
+          "target": "ZZZ精密制造",
+          "amount": "6.2亿元",
+          "purpose": "精密结构件制造",
+          "impact": "垂直整合产业链"
+        }
+      ],
+      "latest_announcements": [
+        "拟30.9亿元收购某光电公司100%股权",
+        "与苹果签署新一轮供应协议",
+        "MiniLED产品获得重要客户认证",
+        "新能源汽车业务订单大幅增长"
+      ]
+    },
+    "technical_analysis": {
+      "current_price": 54.03,
+      "ma5": 52.86,
+      "ma10": 51.75,
+      "ma20": 49.32,
+      "ma60": 47.88,
+      "rsi_14": 68.5,
+      "macd": 1.25,
+      "volume_ratio": 1.45,
+      "price_change_5d": "+3.2%",
+      "price_change_30d": "+9.7%",
+      "support_levels": [
+        50.0,
+        47.5,
+        45.0
+      ],
+      "resistance_levels": [
+        56.0,
+        58.5,
+        62.0
+      ]
+    },
+    "analyst_ratings": {
+      "buy": 8,
+      "hold": 12,
+      "sell": 2,
+      "target_price_avg": 62.5,
+      "target_price_high": 68.0,
+      "target_price_low": 55.0
+    }
+  },
+  "300308": {
+    "basic_info": {
+      "name": "中际旭创",
+      "code": "300308",
+      "sector": "光通信设备",
+      "current_price": 185.22,
+      "market_cap": 2001.4,
+      "total_shares": 10.8,
+      "float_shares": 8.1,
+      "listing_date": "2012-08-07",
+      "recent_high": 195.88,
+      "recent_low": 142.35
+    },
+    "financial_data_2024": {
+      "q3_revenue": 52.3,
+      "q3_net_profit": 12.8,
+      "ytd_revenue": 142.6,
+      "ytd_net_profit": 32.5,
+      "gross_margin": 31.2,
+      "roe_ttm": 18.5,
+      "pe_ttm": 61.6,
+      "pb": 11.4,
+      "revenue_growth_yoy": 89.5,
+      "profit_growth_yoy": 156.8
+    },
+    "business_highlights": {
+      "ai_datacenter": {
+        "description": "800G光模块批量出货",
+        "revenue_contribution": "65%",
+        "growth_rate": "+120%",
+        "key_customers": [
+          "英伟达",
+          "微软",
+          "谷歌",
+          "Meta"
+        ]
+      },
+      "product_portfolio": {
+        "800G_modules": {
+          "status": "量产",
+          "market_share": "35%"
+        },
+        "400G_modules": {
+          "status": "成熟",
+          "market_share": "28%"
+        },
+        "1.6T_modules": {
+          "status": "研发中",
+          "expected_launch": "2025Q2"
+        }
+      },
+      "competitive_advantages": [
+        "硅光技术领先",
+        "客户粘性强",
+        "产能快速扩张",
+        "成本控制优秀"
+      ]
+    },
+    "recent_news": {
+      "key_developments": [
+        {
+          "date": "2024-11-20",
+          "event": "800G光模块大批量交付",
+          "impact": "Q4收入确定性强"
+        },
+        {
+          "date": "2024-11-10",
+          "event": "与英伟达扩大合作",
+          "impact": "2025年订单可见性提升"
+        },
+        {
+          "date": "2024-10-25",
+          "event": "1.6T光模块技术突破",
+          "impact": "技术领先优势扩大"
+        }
+      ]
+    },
+    "technical_analysis": {
+      "current_price": 185.22,
+      "ma5": 182.45,
+      "ma10": 178.92,
+      "ma20": 172.88,
+      "ma60": 165.35,
+      "rsi_14": 72.3,
+      "macd": 3.85,
+      "volume_ratio": 1.28,
+      "price_change_5d": "+1.5%",
+      "price_change_30d": "+7.2%",
+      "support_levels": [
+        175.0,
+        170.0,
+        165.0
+      ],
+      "resistance_levels": [
+        190.0,
+        195.0,
+        200.0
+      ]
+    },
+    "analyst_ratings": {
+      "buy": 18,
+      "hold": 5,
+      "sell": 1,
+      "target_price_avg": 215.0,
+      "target_price_high": 250.0,
+      "target_price_low": 180.0
+    }
+  }
+}

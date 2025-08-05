@@ -1,0 +1,163 @@
+{
+  "002384": {
+    "basic_info": {
+      "name": "东山精密",
+      "code": "002384",
+      "sector": "电子制造",
+      "current_price": 54.03,
+      "market_cap": 756.4,
+      "pe_ttm": 84.9,
+      "pb": 4.2
+    },
+    "financial_performance": {
+      "revenue_growth": 12.3,
+      "profit_growth": -18.5,
+      "roe": 6.8,
+      "gross_margin": 13.5
+    },
+    "recent_events": [
+      "大额收购扩张",
+      "MiniLED布局",
+      "新能源汽车切入"
+    ],
+    "analyst_rating": {
+      "buy": 8,
+      "hold": 12,
+      "sell": 2,
+      "target_avg": 62.5
+    }
+  },
+  "300308": {
+    "basic_info": {
+      "name": "中际旭创",
+      "code": "300308",
+      "sector": "光通信",
+      "current_price": 185.22,
+      "market_cap": 2001.4,
+      "pe_ttm": 61.6,
+      "pb": 11.4
+    },
+    "financial_performance": {
+      "revenue_growth": 89.5,
+      "profit_growth": 156.8,
+      "roe": 18.5,
+      "gross_margin": 31.2
+    },
+    "recent_events": [
+      "800G大批量交付",
+      "英伟达合作扩大",
+      "1.6T技术突破"
+    ],
+    "analyst_rating": {
+      "buy": 18,
+      "hold": 5,
+      "sell": 1,
+      "target_avg": 215.0
+    }
+  },
+  "600731": {
+    "basic_info": {
+      "name": "湖南海利",
+      "code": "600731",
+      "sector": "农药化工",
+      "current_price": 12.89,
+      "market_cap": 54.9,
+      "pe_ttm": 28.6,
+      "pb": 1.8
+    },
+    "financial_performance": {
+      "revenue_growth": 8.7,
+      "profit_growth": 22.5,
+      "roe": 7.2,
+      "gross_margin": 19.8
+    },
+    "recent_events": [
+      "农药价格企稳回升",
+      "新产品获得登记证",
+      "环保整治淘汰落后产能",
+      "出口业务恢复增长"
+    ],
+    "analyst_rating": {
+      "buy": 5,
+      "hold": 8,
+      "sell": 3,
+      "target_avg": 15.2
+    },
+    "industry_trends": {
+      "pesticide_prices": "企稳回升",
+      "policy_environment": "环保趋严利好龙头",
+      "export_recovery": "海外需求恢复",
+      "competition": "行业集中度提升"
+    }
+  },
+  "000796": {
+    "basic_info": {
+      "name": "凯撒旅业",
+      "code": "000796",
+      "sector": "旅游服务",
+      "current_price": 8.95,
+      "market_cap": 61.3,
+      "pe_ttm": 89.5,
+      "pb": 1.4
+    },
+    "financial_performance": {
+      "revenue_growth": 28.5,
+      "profit_growth": 185.2,
+      "roe": 2.8,
+      "gross_margin": 16.2
+    },
+    "recent_events": [
+      "出境游政策全面放开",
+      "免税业务快速恢复",
+      "商务差旅需求回升",
+      "与航司签署战略合作"
+    ],
+    "analyst_rating": {
+      "buy": 3,
+      "hold": 7,
+      "sell": 6,
+      "target_avg": 10.5
+    },
+    "recovery_indicators": {
+      "outbound_travel": "政策完全放开",
+      "duty_free": "免税销售额+45%",
+      "business_travel": "商务差旅恢复60%",
+      "capacity_utilization": "产能利用率65%"
+    }
+  },
+  "002596": {
+    "basic_info": {
+      "name": "海南瑞泽",
+      "code": "002596",
+      "sector": "生态园林",
+      "current_price": 4.12,
+      "market_cap": 36.9,
+      "pe_ttm": 206.0,
+      "pb": 1.6
+    },
+    "financial_performance": {
+      "revenue_growth": -8.3,
+      "profit_growth": -45.2,
+      "roe": 0.8,
+      "gross_margin": 11.2
+    },
+    "recent_events": [
+      "房地产园林需求萎缩",
+      "应收账款回款困难",
+      "项目延期或取消",
+      "成本上升压缩利润"
+    ],
+    "analyst_rating": {
+      "buy": 1,
+      "hold": 4,
+      "sell": 8,
+      "target_avg": 5.5
+    },
+    "industry_challenges": {
+      "real_estate_impact": "房地产下行严重冲击",
+      "payment_issues": "回款周期延长",
+      "competition": "价格竞争激烈",
+      "policy_uncertainty": "政策支持有限"
+    }
+  }
+}

@@ -1,0 +1,128 @@
+[
+  {
+    "ts_code": "000002.SZ", 
+    "reasons": [
+      "PE较低(8.5)", 
+      "PB较低(1.2)", 
+      "大盘股(1200亿)", 
+      "技术面良好"
+    ], 
+    "pe": 8.5, 
+    "score": 94, 
+    "name": "万科A", 
+    "market_cap": 120000000000, 
+    "market_cap_billion": 1200.0, 
+    "pb": 1.2
+  }, 
+  {
+    "ts_code": "000001.SZ", 
+    "reasons": [
+      "PE较低(5.2)", 
+      "PB较低(0.8)", 
+      "大盘股(2800亿)"
+    ], 
+    "pe": 5.2, 
+    "score": 83, 
+    "name": "平安银行", 
+    "market_cap": 280000000000, 
+    "market_cap_billion": 2800.0, 
+    "pb": 0.8
+  }, 
+  {
+    "ts_code": "600000.SH", 
+    "reasons": [
+      "PE较低(4.8)", 
+      "PB较低(0.6)", 
+      "大盘股(1800亿)"
+    ], 
+    "pe": 4.8, 
+    "score": 82, 
+    "name": "浦发银行", 
+    "market_cap": 180000000000, 
+    "market_cap_billion": 1800.0, 
+    "pb": 0.6
+  }, 
+  {
+    "ts_code": "600036.SH", 
+    "reasons": [
+      "PE较低(6.2)", 
+      "PB较低(1.1)", 
+      "大盘股(9500亿)"
+    ], 
+    "pe": 6.2, 
+    "score": 76, 
+    "name": "招商银行", 
+    "market_cap": 950000000000, 
+    "market_cap_billion": 9500.0, 
+    "pb": 1.1
+  }, 
+  {
+    "ts_code": "600887.SH", 
+    "reasons": [
+      "PE适中(18.6)", 
+      "PB适中(4.2)", 
+      "大盘股(2600亿)", 
+      "基本面稳定"
+    ], 
+    "pe": 18.6, 
+    "score": 70, 
+    "name": "伊利股份", 
+    "market_cap": 260000000000, 
+    "market_cap_billion": 2600.0, 
+    "pb": 4.2
+  }, 
+  {
+    "ts_code": "000063.SZ", 
+    "reasons": [
+      "PE适中(19.5)", 
+      "PB适中(2.9)", 
+      "大盘股(1600亿)"
+    ], 
+    "pe": 19.5, 
+    "score": 64, 
+    "name": "中兴通讯", 
+    "market_cap": 160000000000, 
+    "market_cap_billion": 1600.0, 
+    "pb": 2.9
+  }, 
+  {
+    "ts_code": "000776.SZ", 
+    "reasons": [
+      "PE适中(12.5)", 
+      "PB较低(1.8)", 
+      "中盘股(950亿)"
+    ], 
+    "pe": 12.5, 
+    "score": 63, 
+    "name": "广发证券", 
+    "market_cap": 95000000000, 
+    "market_cap_billion": 950.0, 
+    "pb": 1.8
+  }, 
+  {
+    "ts_code": "002415.SZ", 
+    "reasons": [
+      "PE适中(15.2)", 
+      "PB适中(3.2)", 
+      "大盘股(3200亿)"
+    ], 
+    "pe": 15.2, 
+    "score": 57, 
+    "name": "海康威视", 
+    "market_cap": 320000000000, 
+    "market_cap_billion": 3200.0, 
+    "pb": 3.2
+  }, 
+  {
+    "ts_code": "000858.SZ", 
+    "reasons": [
+      "大盘股(6800亿)"
+    ], 
+    "pe": 22.3, 
+    "score": 20, 
+    "name": "五粮液", 
+    "market_cap": 680000000000, 
+    "market_cap_billion": 6800.0, 
+    "pb": 5.6
+  }
+]

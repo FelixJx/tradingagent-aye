@@ -1,0 +1,180 @@
+{
+  "风险提示": [
+    "股价短期涨幅过大，存在回调风险", 
+    "已触发异常波动，监管关注度提升", 
+    "毛利率31.51%相对偏低，成本控制待加强", 
+    "负债率53.22%，财务杠杆相对较高"
+  ], 
+  "投资亮点": [
+    "业绩大幅改善：营收增长50.73%，成功扭亏为盈", 
+    "资金面强势：主力+游资接力流入，融资连续3日净买入", 
+    "价格突破：连续3日异常波动，累计涨幅27.26%", 
+    "行业前景：洁净室需求增长，电子洁净有望成第二增长曲线", 
+    "技术壁垒：17年行业经验，200+专利，800+优质客户"
+  ], 
+  "综合评价": {
+    "各维度评分": {
+      "融资面": 75, 
+      "资金面": 88, 
+      "价格表现": 95, 
+      "机构面": 65, 
+      "基本面": 100
+    }, 
+    "建议仓位": "5-8%", 
+    "投资建议": "强烈买入", 
+    "持有周期": "中长期(6-12个月)", 
+    "综合评分": 90.0
+  }, 
+  "分析结果": {
+    "基本面分析": {
+      "turnaround_success": true, 
+      "q2_acceleration": true, 
+      "profit_growth_h1": 273.48, 
+      "revenue_growth_h1": 50.73, 
+      "fundamental_score": 100
+    }, 
+    "融资分析": {
+      "margin_score": 75, 
+      "financing_net_buy_3d": 41339600, 
+      "financing_sentiment": "积极看多"
+    }, 
+    "价格分析": {
+      "volume_surge": "大幅放量", 
+      "price_score": 95, 
+      "recent_performance": "强势异常波动", 
+      "cumulative_gain_3d": 27.26
+    }, 
+    "资金分析": {
+      "fund_score": 88, 
+      "retail_outflow_2d": 63337600, 
+      "flow_pattern": "主力+游资接力，散户获利了结", 
+      "main_inflow_2d": 36486700
+    }, 
+    "机构分析": {
+      "institutional_score": 65, 
+      "institutional_sentiment": "谨慎乐观", 
+      "institutional_buy_ratio": 0.5
+    }
+  }, 
+  "真实市场数据": {
+    "fund_flow_real": {
+      "2025_07_30": {
+        "主力净流入": 28165800, 
+        "主力净流入率": 4.55, 
+        "游资净流出率": 2.91, 
+        "游资净流出": 18019700, 
+        "总成交额": 619000000, 
+        "散户净流出": 10146100, 
+        "散户净流出率": 1.64
+      }, 
+      "2025_07_31": {
+        "主力净流入": 8320900, 
+        "主力净流入率": 1.08, 
+        "散户净流出": 53191500, 
+        "散户净流出率": 6.91, 
+        "游资净流入": 44870700, 
+        "总成交额": 770000000, 
+        "游资净流入率": 5.83
+      }
+    }, 
+    "institutional_rating_real": {
+      "neutral_rating": 1, 
+      "buy_rating": 1, 
+      "sell_rating": 0, 
+      "recent_90d_institutions": 2, 
+      "average_target_price": null
+    }, 
+    "abnormal_trading": {
+      "dates": [
+        "2025-07-29", 
+        "2025-07-30", 
+        "2025-07-31"
+      ], 
+      "disclosure": "已发布异常波动公告", 
+      "reason": "股票交易异常波动", 
+      "cumulative_gain": 30
+    }, 
+    "margin_trading_real": {
+      "融资净买入": 30666300, 
+      "融资买入": 77582300, 
+      "融资融券余额": 82998900, 
+      "融资净买入累计": 41339600, 
+      "融资偿还": 46916000, 
+      "融资净买入连续天数": 3
+    }, 
+    "latest_price_data": {
+      "2025_07_29": {
+        "close_price": 27.66, 
+        "market_cap": 2900000000
+      }, 
+      "2025_07_30": {
+        "turnover_rate": 27.13, 
+        "status": "涨停", 
+        "volume": 191500, 
+        "change_pct": 19.99, 
+        "close_price": 33.19, 
+        "amount": 619000000
+      }, 
+      "2025_07_31": {
+        "turnover_rate": 32.07, 
+        "52w_high": 35.2, 
+        "volume": 226300, 
+        "change_pct": 6.06, 
+        "close_price": 35.2, 
+        "52w_low": 27.66, 
+        "amount": 770000000
+      }
+    }, 
+    "financial_real": {
+      "2025_H1": {
+        "gross_margin": 31.51, 
+        "net_profit_ex_growth": 216.16, 
+        "revenue": 835000000, 
+        "net_profit_ex": 19595100, 
+        "net_profit_growth": 273.48, 
+        "net_profit": 18683000, 
+        "debt_ratio": 53.22, 
+        "eps": 0.19, 
+        "revenue_growth": 50.73
+      }, 
+      "2024_H1_comparison": {
+        "revenue": 554000000, 
+        "net_profit": -10770000
+      }, 
+      "2025_Q2": {
+        "net_profit_ex_growth": 200.03, 
+        "revenue": 540000000, 
+        "net_profit_growth": 123.63, 
+        "net_profit": 47638000, 
+        "net_profit_ex": 49585900, 
+        "revenue_growth": 66.45
+      }
+    }, 
+    "basic_info": {
+      "market": "创业板", 
+      "main_business": "医疗专项、实验室、电子洁净三大领域", 
+      "capabilities": "设计+施工+采购+售后全产业链", 
+      "patents": 200, 
+      "stock_code": "301235.SZ", 
+      "old_name": "华康医疗", 
+      "establishment_years": 17, 
+      "company_name": "武汉华康世纪洁净科技股份有限公司", 
+      "customers": 800, 
+      "industry": "洁净室系统集成服务"
+    }
+  }, 
+  "数据来源": "Web搜索真实市场数据", 
+  "股票信息": {
+    "market": "创业板", 
+    "main_business": "医疗专项、实验室、电子洁净三大领域", 
+    "capabilities": "设计+施工+采购+售后全产业链", 
+    "patents": 200, 
+    "stock_code": "301235.SZ", 
+    "old_name": "华康医疗", 
+    "establishment_years": 17, 
+    "company_name": "武汉华康世纪洁净科技股份有限公司", 
+    "customers": 800, 
+    "industry": "洁净室系统集成服务"
+  }, 
+  "分析时间": "2025-08-03T20:23:12.898149"
+}

@@ -1,0 +1,8 @@
+2025-07-26 01:13:00,596 - __main__ - INFO - 使用本地Ollama模型
+2025-07-26 01:13:00,918 - numexpr.utils - INFO - Note: NumExpr detected 14 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2025-07-26 01:13:00,919 - numexpr.utils - INFO - NumExpr defaulting to 8 threads.
+2025-07-26 01:13:02,006 - __main__ - ERROR - 数据采集agent初始化失败: No module named 'stockstats'
+2025-07-26 10:33:54,947 - __main__ - INFO - 使用本地Ollama模型
+2025-07-26 10:33:55,297 - numexpr.utils - INFO - Note: NumExpr detected 14 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2025-07-26 10:33:55,297 - numexpr.utils - INFO - NumExpr defaulting to 8 threads.
+2025-07-26 10:33:55,953 - __main__ - ERROR - 数据采集agent初始化失败: No module named 'stockstats'

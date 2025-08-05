@@ -1,0 +1,76 @@
+2025-07-26 01:17:45,807 - INFO - ✅ 数据库初始化完成: unstoppable_guomai_data.db
+2025-07-26 01:17:45,807 - INFO - 🚀 不达目的不罢休数据采集器初始化完成
+2025-07-26 01:17:45,807 - INFO - 🎯 开始不达目的不罢休的数据采集
+2025-07-26 01:17:45,807 - INFO - 📊 执行策略 1/5: direct_crawling
+2025-07-26 01:17:45,807 - INFO - 🕷️ 执行直接爬取策略
+2025-07-26 01:17:55,075 - INFO - 新浪财经获得 0 条数据
+2025-07-26 01:17:58,273 - INFO - 东方财富获得 0 条数据
+2025-07-26 01:18:01,146 - INFO - 同花顺获得 0 条数据
+2025-07-26 01:18:01,154 - WARNING - ⚠️ 策略 direct_crawling 无数据返回
+2025-07-26 01:18:06,052 - INFO - 📊 执行策略 2/5: github_tools
+2025-07-26 01:18:06,053 - INFO - 🐙 执行GitHub工具策略
+2025-07-26 01:18:06,053 - INFO - 搜索GitHub爬虫: sina finance crawler python
+2025-07-26 01:18:09,130 - INFO - 搜索GitHub爬虫: eastmoney crawler python
+2025-07-26 01:18:11,609 - INFO - 搜索GitHub爬虫: cninfo crawler python
+2025-07-26 01:18:13,927 - INFO - 搜索GitHub爬虫: juchao crawler python
+2025-07-26 01:18:16,250 - INFO - 搜索GitHub爬虫: china stock news crawler
+2025-07-26 01:18:18,611 - INFO - 搜索GitHub爬虫: 中国股票爬虫 python
+2025-07-26 01:18:20,911 - INFO - 搜索GitHub爬虫: 财经新闻爬虫 python
+2025-07-26 01:18:23,259 - INFO - 搜索GitHub爬虫: 股票数据采集 python
+2025-07-26 01:18:25,620 - INFO - 搜索GitHub爬虫: A股爬虫 python
+2025-07-26 01:18:27,922 - INFO - 搜索GitHub爬虫: 证券新闻爬虫 python
+2025-07-26 01:18:30,919 - INFO - 找到 3 个潜在爬虫工具
+2025-07-26 01:18:30,920 - INFO - 正在下载爬虫: waizao/StockApiPython
+2025-07-26 01:18:35,601 - INFO - ✅ Git clone 成功: StockApiPython
+2025-07-26 01:18:35,601 - INFO - 安装依赖: downloaded_crawlers/StockApiPython/requirements.txt
+2025-07-26 01:18:37,156 - INFO - ✅ 依赖安装成功
+2025-07-26 01:18:37,156 - INFO - 尝试通过setup.py安装
+2025-07-26 01:18:37,868 - INFO - ✅ setup.py安装成功
+2025-07-26 01:18:37,868 - INFO - 正在下载爬虫: jianzhichun/wallstreetcnScrapy
+2025-07-26 01:18:43,175 - INFO - ✅ Git clone 成功: wallstreetcnScrapy
+2025-07-26 01:18:43,176 - INFO - 正在下载爬虫: wsyxbcl/eastmoney_crawler
+2025-07-26 01:18:45,129 - INFO - ✅ Git clone 成功: eastmoney_crawler
+2025-07-26 01:18:45,130 - INFO - 成功下载 3 个爬虫工具
+2025-07-26 01:18:45,130 - INFO - 执行爬虫文件: downloaded_crawlers/StockApiPython/setup.py
+2025-07-26 01:18:45,186 - WARNING - 执行 downloaded_crawlers/StockApiPython/setup.py 失败: [Errno 2] No such file or directory: 'waizao/__init__.py'
+2025-07-26 01:18:45,187 - INFO - 执行爬虫文件: downloaded_crawlers/eastmoney_crawler/eastmoney_yjbg.py
+2025-07-26 01:18:45,188 - WARNING - 执行 downloaded_crawlers/eastmoney_crawler/eastmoney_yjbg.py 失败: No module named 'eastmoney_nbyj'
+2025-07-26 01:18:45,188 - INFO - 执行爬虫文件: downloaded_crawlers/eastmoney_crawler/eastmoney_nbyj.py
+2025-07-26 01:18:45,188 - WARNING - ⚠️ 策略 github_tools 无数据返回
+2025-07-26 01:18:48,011 - INFO - 📊 执行策略 3/5: api_endpoints
+2025-07-26 01:18:48,011 - INFO - 🔌 执行API端点策略
+2025-07-26 01:18:48,011 - INFO - 尝试API: 东方财富新闻API
+2025-07-26 01:18:53,218 - INFO - 尝试API: 同花顺资讯API
+2025-07-26 01:18:53,761 - INFO - 同花顺资讯API 获得 1 条数据
+2025-07-26 01:18:55,774 - INFO - 尝试API: 雪球资讯API
+2025-07-26 01:18:58,043 - INFO - 雪球资讯API 获得 1 条数据
+2025-07-26 01:19:00,069 - INFO - ✅ 策略 api_endpoints 成功，获得 2 条数据
+2025-07-26 01:19:03,379 - INFO - 📊 执行策略 4/5: search_engines
+2025-07-26 01:19:03,379 - INFO - 🔍 执行搜索引擎策略
+2025-07-26 01:19:03,380 - INFO - 搜索: Bing - 果麦文化 最新消息
+2025-07-26 01:19:04,733 - INFO - Bing 搜索获得 0 条结果
+2025-07-26 01:19:09,944 - INFO - 搜索: DuckDuckGo - 果麦文化 最新消息
+2025-07-26 01:19:14,724 - INFO - DuckDuckGo 搜索获得 3 条结果
+2025-07-26 01:19:19,005 - INFO - 搜索: Bing - 301052 果麦文化 新闻
+2025-07-26 01:19:19,858 - INFO - Bing 搜索获得 0 条结果
+2025-07-26 01:19:24,674 - INFO - 搜索: DuckDuckGo - 301052 果麦文化 新闻
+2025-07-26 01:19:25,850 - INFO - DuckDuckGo 搜索获得 3 条结果
+2025-07-26 01:19:29,670 - INFO - 搜索: Bing - 果麦文化 财报 业绩
+2025-07-26 01:19:31,255 - INFO - Bing 搜索获得 0 条结果
+2025-07-26 01:19:35,578 - INFO - 搜索: DuckDuckGo - 果麦文化 财报 业绩
+2025-07-26 01:19:36,725 - INFO - DuckDuckGo 搜索获得 3 条结果
+2025-07-26 01:19:40,172 - INFO - 搜索: Bing - 果麦文化 公告
+2025-07-26 01:19:40,990 - INFO - Bing 搜索获得 0 条结果
+2025-07-26 01:19:46,710 - INFO - 搜索: DuckDuckGo - 果麦文化 公告
+2025-07-26 01:19:47,806 - INFO - DuckDuckGo 搜索获得 3 条结果
+2025-07-26 01:19:52,582 - INFO - 搜索: Bing - 果麦文化传媒股份有限公司
+2025-07-26 01:19:53,371 - INFO - Bing 搜索获得 0 条结果
+2025-07-26 01:19:57,263 - INFO - 搜索: DuckDuckGo - 果麦文化传媒股份有限公司
+2025-07-26 01:19:59,124 - INFO - DuckDuckGo 搜索获得 3 条结果
+2025-07-26 01:20:02,360 - INFO - ✅ 策略 search_engines 成功，获得 15 条数据
+2025-07-26 01:20:04,372 - INFO - 📊 执行策略 5/5: fallback_simulation
+2025-07-26 01:20:04,373 - INFO - 🎲 执行兜底策略 - 生成高质量模拟数据
+2025-07-26 01:20:04,373 - INFO - 生成 5 条高质量兜底数据
+2025-07-26 01:20:04,374 - INFO - ✅ 策略 fallback_simulation 成功，获得 5 条数据
+2025-07-26 01:20:06,673 - INFO - ✅ 成功保存 22 条数据到数据库
+2025-07-26 01:20:06,673 - INFO - 🏆 数据采集完成！总共收集 22 条数据，保存 22 条
