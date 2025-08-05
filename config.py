@@ -40,23 +40,23 @@ class Config:
     
     def _validate_required_env_vars(self) -> None:
         """Validate that required environment variables are set"""
-        required_vars = [
-            'TUSHARE_TOKEN',
-            'DASHSCOPE_API_KEY'
-        ]
+        # 不强制要求环境变量，只是记录状态
+        env_status = {
+            'TUSHARE_TOKEN': bool(os.getenv('TUSHARE_TOKEN')),
+            'DASHSCOPE_API_KEY': bool(os.getenv('DASHSCOPE_API_KEY')),
+            'TAVILY_API_KEY': bool(os.getenv('TAVILY_API_KEY'))
+        }
         
-        missing_vars = []
-        for var in required_vars:
-            if not os.getenv(var):
-                missing_vars.append(var)
+        available_count = sum(env_status.values())
+        total_count = len(env_status)
         
-        if missing_vars:
-            self.logger.warning(
-                f"Missing required environment variables: {', '.join(missing_vars)}"
-            )
-            self.logger.warning(
-                "Please check your .env file or set these variables in your environment"
-            )
+        self.logger.info(f"Environment variables status: {available_count}/{total_count} configured")
+        
+        for var, status in env_status.items():
+            if status:
+                self.logger.info(f"✅ {var}: configured")
+            else:
+                self.logger.info(f"⚠️ {var}: not configured - will use fallback mode")
     
     # API Configuration
     @property

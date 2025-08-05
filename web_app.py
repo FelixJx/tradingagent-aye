@@ -11,19 +11,34 @@ import threading
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # 导入配置管理，优先使用完整配置
+config = None
 try:
     from config import get_config
     config = get_config()
     print("✅ Using full configuration with LangChain support")
-except ImportError as e:
+except Exception as e:
     print(f"⚠️ Full config import failed: {e}")
     try:
         from config_simple import get_simple_config
         config = get_simple_config()
         print("📦 Using simplified configuration")
-    except ImportError:
-        print("❌ No config module available, using environment variables directly")
-        config = None
+    except Exception as e2:
+        print(f"⚠️ Simple config also failed: {e2}")
+        print("🔧 Using direct environment variables")
+        
+        # 创建一个基础配置对象
+        class BasicConfig:
+            @property
+            def tushare_token(self):
+                return os.getenv('TUSHARE_TOKEN')
+            @property
+            def dashscope_api_key(self):
+                return os.getenv('DASHSCOPE_API_KEY')
+            @property
+            def tavily_api_key(self):
+                return os.getenv('TAVILY_API_KEY')
+        
+        config = BasicConfig()
 
 app = Flask(__name__)
 
@@ -668,10 +683,40 @@ cleanup_thread = threading.Thread(target=cleanup_cache, daemon=True)
 cleanup_thread.start()
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    print(f'🚀 启动智能交易助手服务，端口: {port}')
-    print('📊 数据源: Tushare + Tavily')
-    print('🤖 AI模型: DeepSeek + 阿里云') 
-    print('⚡ 多智能体协同分析系统已就绪')
+    # 环境信息打印
+    print("=" * 60)
+    print("🚀 Trading Agent 启动中...")
+    print(f"🐍 Python版本: {sys.version}")
+    print(f"📁 工作目录: {os.getcwd()}")
+    print(f"🔧 Flask版本: {getattr(__import__('flask'), '__version__', 'unknown')}")
     
-    app.run(host='0.0.0.0', port=port, debug=False)
+    # 环境变量检查
+    env_vars = {
+        'PORT': os.getenv('PORT', '5000'),
+        'FLASK_ENV': os.getenv('FLASK_ENV', 'development'),
+        'TUSHARE_TOKEN': '已配置' if os.getenv('TUSHARE_TOKEN') else '未配置',
+        'DASHSCOPE_API_KEY': '已配置' if os.getenv('DASHSCOPE_API_KEY') else '未配置',
+        'TAVILY_API_KEY': '已配置' if os.getenv('TAVILY_API_KEY') else '未配置'
+    }
+    
+    print("\n🔑 环境变量状态:")
+    for key, value in env_vars.items():
+        print(f"  {key}: {value}")
+    
+    # 功能检查
+    print(f"\n⚡ 可用功能: {AVAILABLE_FEATURES}")
+    
+    port = int(os.environ.get('PORT', 5000))
+    host = '0.0.0.0'
+    
+    print(f"\n🌐 启动Web服务 {host}:{port}")
+    print("📊 数据源: Tushare + AKShare + Tavily")
+    print("🤖 AI引擎: DashScope + Multi-Agent System")
+    print("=" * 60)
+    
+    try:
+        app.run(host=host, port=port, debug=False, threaded=True)
+    except Exception as e:
+        print(f"❌ 启动失败: {e}")
+        import traceback
+        traceback.print_exc()

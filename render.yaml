@@ -2,12 +2,14 @@ services:
   - type: web
     name: tradingagent-zh
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: python web_app.py
+    region: oregon
+    plan: free
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: python -u web_app.py
     envVars:
       - key: TUSHARE_TOKEN
         value: b34d8920b99b43d48df7e792a4708a29f868feeee30d9c84b54bf065
-      - key: DEEPSEEK_API_KEY
+      - key: DEEPSEEK_API_KEY  
         value: sk-831cb74319af43ebbfd7ad5e13fd4dfd
       - key: DASHSCOPE_API_KEY
         value: sk-e050041b41674ed7b87644895ebae718
@@ -15,6 +17,10 @@ services:
         value: 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
       - key: FLASK_ENV
         value: production
+      - key: FLASK_DEBUG
+        value: "false"
+      - key: PYTHONUNBUFFERED
+        value: "1"
       - key: PYTHONPATH
         value: /opt/render/project/src
       - key: TZ

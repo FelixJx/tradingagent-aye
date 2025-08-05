@@ -1,30 +1,32 @@
-# Core Web Framework
-flask==3.0.3
-flask-cors==4.0.0
+# Core Web Framework - Keep these versions stable
+flask==2.3.3
+flask-cors==4.0.1
 gunicorn==21.2.0
 requests==2.31.0
 
 # Data Processing (Essential)
-pandas==2.1.4
+pandas==2.0.3
 numpy==1.24.4
 
-# Real-time Data
-akshare==1.17.28
+# Real-time Data Sources
+akshare==1.14.20
 tushare==1.2.89
 
-# LLM and AI
-dashscope==1.20.0
-openai==1.35.0
+# AI and LLM Services
+dashscope==1.17.0
+openai==1.3.5
 
-# Web Search
-tavily-python==0.3.3
+# News and Search
+tavily-python==0.3.0
 
-# Configuration
+# Essential Utilities
 python-dotenv==1.0.0
-
-# Utilities  
 python-dateutil==2.8.2
-pytz==2024.1
+pytz==2023.3
+
+# Optional packages that may help
+aiohttp==3.8.6
+stockstats==0.6.2
 
 # Optional Advanced Features (install if available)
 # langchain==0.2.0
